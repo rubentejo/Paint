@@ -1,37 +1,119 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Paint
 {
+    /// <summary>
+    /// Herramientas.
+    /// </summary>
     public enum Herramientas
     {
-        Lapiz, Goma, Brocha, Relleno, Figura
+        /// <summary>
+        /// The lapiz.
+        /// </summary>
+        Lapiz,
+        /// <summary>
+        /// The goma.
+        /// </summary>
+        Goma,
+        /// <summary>
+        /// The brocha.
+        /// </summary>
+        Brocha,
+        /// <summary>
+        /// The relleno.
+        /// </summary>
+        Relleno,
+        /// <summary>
+        /// The figura.
+        /// </summary>
+        Figura
     }
 
+    /// <summary>
+    /// Form1.
+    /// </summary>
     public partial class Form1 : Form
     {
+        /// <summary>
+        /// The g.
+        /// </summary>
         Graphics g;
+
+        /// <summary>
+        /// The p.
+        /// </summary>
         Pen p;
-        bool mouseDown, cambios;
-        int tamañoLapiz, tamañoGoma, tamañoBrocha;
+
+        /// <summary>
+        /// The mouse down.
+        /// </summary>
+        bool mouseDown;
+
+        /// <summary>
+        /// The cambios.
+        /// </summary>
+        bool cambios;
+
+        /// <summary>
+        /// The tamaño lapiz.
+        /// </summary>
+        int tamañoLapiz;
+
+        /// <summary>
+        /// The tamaño goma.
+        /// </summary>
+        int tamañoGoma;
+
+        /// <summary>
+        /// The tamaño brocha.
+        /// </summary>
+        int tamañoBrocha;
+
+        /// <summary>
+        /// The tamaños lapiz.
+        /// </summary>
         int[] tamañosLapiz = { 1, 2, 3, 4, 5 };
+
+        /// <summary>
+        /// The tamaños goma.
+        /// </summary>
         int[] tamañosGoma = { 5, 10, 15, 20, 25 };
+
+        /// <summary>
+        /// The tamaños brocha.
+        /// </summary>
         int[] tamañosBrocha = { 5, 6, 7, 8, 9, 10 };
-        Point inicio, fin;
+
+        /// <summary>
+        /// The inicio.
+        /// </summary>
+        Point inicio;
+
+        /// <summary>
+        /// The fin.
+        /// </summary>
+        Point fin;
+
+        /// <summary>
+        /// The herramienta.
+        /// </summary>
         Herramientas herramienta;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:Paint.Form1"/> class.
+        /// </summary>
         public Form1()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Form1s the load.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
         private void Form1_Load(object sender, EventArgs e)
         {
             // Inicializamos componentes
@@ -74,6 +156,11 @@ namespace Paint
             return -1;
         }
 
+        /// <summary>
+        /// Coloreses the click.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
         private void colores_Click(object sender, EventArgs e)
         {
             colorActual.BackColor = ((Button)sender).BackColor;
@@ -169,6 +256,11 @@ namespace Paint
             }
         }
 
+        /// <summary>
+        /// Nuevos the tool strip menu item click.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
         private void nuevoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (cambios)
@@ -189,6 +281,11 @@ namespace Paint
             }
         }
 
+        /// <summary>
+        /// Abrirs the tool strip menu item click.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
         private void abrirToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult dr = openFileDialog1.ShowDialog();
@@ -216,6 +313,11 @@ namespace Paint
             }
         }
 
+        /// <summary>
+        /// Canvases the click.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
         private void canvas_Click(object sender, EventArgs e)
         {
             switch (herramienta)
@@ -236,6 +338,11 @@ namespace Paint
             }
         }
 
+        /// <summary>
+        /// Canvases the mouse down.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
         private void canvas_MouseDown(object sender, MouseEventArgs e)
         {
             if(e.Button == MouseButtons.Left)
@@ -246,6 +353,11 @@ namespace Paint
             }
         }
 
+        /// <summary>
+        /// Canvases the mouse move.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
         private void canvas_MouseMove(object sender, MouseEventArgs e)
         {
             fin = e.Location;
@@ -277,6 +389,11 @@ namespace Paint
             inicio = fin; 
         }
 
+        /// <summary>
+        /// Canvases the mouse up.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
         private void canvas_MouseUp(object sender, MouseEventArgs e)
         {
             if(e.Button == MouseButtons.Left){
