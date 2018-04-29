@@ -1,3 +1,10 @@
 15/04/2018:
 	· Empiezo a crear la interfaz básica del paint.
 	· Creo el greed de colores y la funcionalidad de dibujado.
+22/04/2018:
+	· La aplicacion ya dibuja (lapiz y brocha), borra, cambia de color, cambia el grosor de las herramientas..
+	· Empiezo a pensar el tema de abrir/guardar archivos
+29/04/2018:
+	· Me pongo con el tema de abrir/guardar archivos.
+	· Lo que es la estructura la tengo, me falta finalizar (no puedo por ciertos problemas, posible tutoria).
+	· Empiezo a pensar el tema de las figuras.

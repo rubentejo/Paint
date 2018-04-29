@@ -40,6 +40,8 @@
             this.salirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.grbTamaños = new System.Windows.Forms.GroupBox();
+            this.lblTamaños = new System.Windows.Forms.Label();
+            this.cboTamaños = new System.Windows.Forms.ComboBox();
             this.grbFiguras = new System.Windows.Forms.GroupBox();
             this.grbColores = new System.Windows.Forms.GroupBox();
             this.colorActual = new System.Windows.Forms.Button();
@@ -71,8 +73,6 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.canvas = new System.Windows.Forms.PictureBox();
-            this.cboTamaños = new System.Windows.Forms.ComboBox();
-            this.lblTamaños = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.grbTamaños.SuspendLayout();
@@ -123,35 +123,38 @@
             // guardarToolStripMenuItem
             // 
             this.guardarToolStripMenuItem.Name = "guardarToolStripMenuItem";
-            this.guardarToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.guardarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.guardarToolStripMenuItem.Text = "&Guardar";
+            this.guardarToolStripMenuItem.Click += new System.EventHandler(this.guardarToolStripMenuItem_Click);
             // 
             // guardarComoToolStripMenuItem
             // 
             this.guardarComoToolStripMenuItem.Name = "guardarComoToolStripMenuItem";
-            this.guardarComoToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.guardarComoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.guardarComoToolStripMenuItem.Text = "Guardar c&omo";
+            this.guardarComoToolStripMenuItem.Click += new System.EventHandler(this.guardarComoToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(153, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
             // 
             // acercaDePaintToolStripMenuItem
             // 
             this.acercaDePaintToolStripMenuItem.Name = "acercaDePaintToolStripMenuItem";
-            this.acercaDePaintToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.acercaDePaintToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.acercaDePaintToolStripMenuItem.Text = "Acerca de &Paint";
+            this.acercaDePaintToolStripMenuItem.Click += new System.EventHandler(this.acercaDePaintToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(153, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
             // 
             // salirToolStripMenuItem
             // 
             this.salirToolStripMenuItem.Name = "salirToolStripMenuItem";
-            this.salirToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.salirToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.salirToolStripMenuItem.Text = "&Salir";
             // 
             // panel1
@@ -176,6 +179,25 @@
             this.grbTamaños.TabIndex = 4;
             this.grbTamaños.TabStop = false;
             this.grbTamaños.Text = "Tamaños";
+            // 
+            // lblTamaños
+            // 
+            this.lblTamaños.AutoSize = true;
+            this.lblTamaños.Location = new System.Drawing.Point(6, 25);
+            this.lblTamaños.Name = "lblTamaños";
+            this.lblTamaños.Size = new System.Drawing.Size(90, 13);
+            this.lblTamaños.TabIndex = 1;
+            this.lblTamaños.Text = "Tamaño del lápiz:";
+            // 
+            // cboTamaños
+            // 
+            this.cboTamaños.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboTamaños.FormattingEnabled = true;
+            this.cboTamaños.Location = new System.Drawing.Point(9, 41);
+            this.cboTamaños.Name = "cboTamaños";
+            this.cboTamaños.Size = new System.Drawing.Size(87, 21);
+            this.cboTamaños.TabIndex = 0;
+            this.cboTamaños.SelectedIndexChanged += new System.EventHandler(this.cboTamaños_SelectedIndexChanged);
             // 
             // grbFiguras
             // 
@@ -485,11 +507,11 @@
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.Filter = "PNG|*.png|JPG|*.jpg|JPEG|*jpg|BMP|*.bmp|GIF|*.gif";
+            this.openFileDialog1.Filter = "PNG|*.png|JPEG|*.jpeg;*.jpg|BMP|*.bmp|GIF|*.gif";
             // 
             // saveFileDialog1
             // 
-            this.saveFileDialog1.Filter = "PNG|*.png|JPG|*.jpg|JPEG|*jpg|BMP|*.bmp|GIF|*.gif";
+            this.saveFileDialog1.Filter = "PNG|*.png|JPEG|*.jpeg;*.jpg|BMP|*.bmp|GIF|*.gif";
             // 
             // canvas
             // 
@@ -505,25 +527,6 @@
             this.canvas.MouseDown += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseDown);
             this.canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseMove);
             this.canvas.MouseUp += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseUp);
-            // 
-            // cboTamaños
-            // 
-            this.cboTamaños.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboTamaños.FormattingEnabled = true;
-            this.cboTamaños.Location = new System.Drawing.Point(9, 41);
-            this.cboTamaños.Name = "cboTamaños";
-            this.cboTamaños.Size = new System.Drawing.Size(87, 21);
-            this.cboTamaños.TabIndex = 0;
-            this.cboTamaños.SelectedIndexChanged += new System.EventHandler(this.cboTamaños_SelectedIndexChanged);
-            // 
-            // lblTamaños
-            // 
-            this.lblTamaños.AutoSize = true;
-            this.lblTamaños.Location = new System.Drawing.Point(6, 25);
-            this.lblTamaños.Name = "lblTamaños";
-            this.lblTamaños.Size = new System.Drawing.Size(90, 13);
-            this.lblTamaños.TabIndex = 1;
-            this.lblTamaños.Text = "Tamaño del lápiz:";
             // 
             // Form1
             // 

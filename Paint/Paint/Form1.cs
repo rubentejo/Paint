@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +12,9 @@ using System.Windows.Forms;
 
 namespace Paint
 {
+    /// <summary>
+    /// Enumerado de herramientas de trabajo.
+    /// </summary>
     public enum Herramientas
     {
         Lapiz, Goma, Brocha, Relleno, Figura
@@ -19,7 +24,9 @@ namespace Paint
     {
         Graphics g;
         Pen p;
-        bool mouseDown, cambios;
+        bool mouseDown, cambios, imagenAbierta;
+        string ruta = "";
+        ImageFormat formato;
         int tamañoLapiz, tamañoGoma, tamañoBrocha;
         int[] tamañosLapiz = { 1, 2, 3, 4, 5 };
         int[] tamañosGoma = { 5, 10, 15, 20, 25 };
@@ -32,6 +39,11 @@ namespace Paint
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Inicializa los componentes de trabajo.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
             // Inicializamos componentes
@@ -74,6 +86,11 @@ namespace Paint
             return -1;
         }
 
+        /// <summary>
+        /// Actualiza el color de trabajo según el color que se haya seleccionado.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void colores_Click(object sender, EventArgs e)
         {
             colorActual.BackColor = ((Button)sender).BackColor;
@@ -169,6 +186,12 @@ namespace Paint
             }
         }
 
+        /// <summary>
+        /// Limpia el picturebox. Si se realizaron cambios previamente, pregunta si se desea
+        /// guardar o no.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void nuevoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (cambios)
@@ -177,22 +200,33 @@ namespace Paint
                 switch (dr)
                 {
                     case DialogResult.Yes:
-                        saveFileDialog1.ShowDialog();
+                        guardarToolStripMenuItem.PerformClick();
+                        Text = "Sin título";
                         break;
                     case DialogResult.No:
                         canvas.Refresh();
                         canvas.Image = null;
+                        Text = "Sin título";
                         break;
                     case DialogResult.Cancel:
                         break;
                 }
             }
+            else
+            {
+                Text = "Sin título";
+            }
         }
 
+        /// <summary>
+        /// Abre una imagen sobre el picturebox.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void abrirToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult dr = openFileDialog1.ShowDialog();
-            if(dr == DialogResult.OK) //FALTA COMPROBAR DISTINTO DE NULL
+            if(dr == DialogResult.OK && openFileDialog1.FileName != null)
             {
                 if (cambios)
                 {
@@ -200,7 +234,8 @@ namespace Paint
                     switch (dr2)
                     {
                         case DialogResult.Yes:
-                            saveFileDialog1.ShowDialog();
+                            //saveFileDialog1.ShowDialog();
+                            guardarToolStripMenuItem.PerformClick();
                             //Falta el codigo de guardado
                             break;
                         case DialogResult.No:
@@ -212,10 +247,115 @@ namespace Paint
                     }
                 }
 
-                //Aqui se carga la imagen que se quiere abrir
+                canvas.Image = (Image)Image.FromFile(openFileDialog1.FileName).Clone();
+                imagenAbierta = true;
+                ruta = openFileDialog1.FileName;
+                formato = canvas.Image.RawFormat;
+                FileInfo f = new FileInfo(ruta);
+                Text = f.Name;
+                openFileDialog1.Dispose();
+                //string[] split = ruta.Split('.');
+                //if(split.Length > 1)
+                //{
+                //    formato = split[split.Length - 1];
+                //}
             }
         }
 
+        /// <summary>
+        /// Guarda la imagen creada sobre el picturebox en el formato que se le indique.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void guardarComoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.FileName = Text;
+            if (formato == ImageFormat.Png)
+            {
+                saveFileDialog1.FilterIndex = 0;
+            }
+            else if (formato == ImageFormat.Jpeg)
+            {
+                saveFileDialog1.FilterIndex = 1;
+            }
+            else if (formato == ImageFormat.Bmp)
+            {
+                saveFileDialog1.FilterIndex = 2;
+            }
+            else if (formato == ImageFormat.Gif)
+            {
+                saveFileDialog1.FilterIndex = 3;
+            }
+            else
+            {
+                saveFileDialog1.FilterIndex = -1;
+            }
+            DialogResult dr = saveFileDialog1.ShowDialog();
+            if (dr == DialogResult.OK && saveFileDialog1.FileName != null)
+            {
+                Image img = canvas.Image;
+                img.Save(saveFileDialog1.FileName);
+            }
+        }
+
+        private void acercaDePaintToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Acerca de Paint", "Este Paint ha sido realizado por Rubén Tejo Pereira.");
+        }
+
+        /// <summary>
+        /// Guarda la imagen creada sobre el picturebox.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void guardarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (imagenAbierta)
+            {
+                Bitmap bmp = new Bitmap(canvas.Width, canvas.Height);
+                Graphics g = Graphics.FromImage(bmp);
+                Rectangle rect = canvas.RectangleToScreen(canvas.ClientRectangle);
+                g.CopyFromScreen(rect.Location, Point.Empty, canvas.Size);
+                g.Dispose();
+
+                //Image img = canvas.Image;
+
+                //FileInfo fi = new FileInfo(ruta);
+                //DirectoryInfo di = new DirectoryInfo(fi.DirectoryName);
+                //foreach(FileInfo f in di.GetFiles())
+                //{
+                //    if(f.FullName == ruta)
+                //    {
+                //        try
+                //        {
+                //            f.Delete();
+                //            break;
+                //        }
+                //        catch (IOException) { }
+                //    }
+                //}
+                try
+                {
+                    if (File.Exists(ruta))
+                    {
+                        File.Delete(ruta);
+                    }
+                }
+                catch (IOException) { }
+                bmp.Save(ruta, formato);
+            }
+            else
+            {   
+                guardarComoToolStripMenuItem.PerformClick();
+            }
+        }
+
+        /// <summary>
+        /// Lleva a cabo los cambios procedentes en el picturebox cuando se efectúa
+        /// sobre él un click izquierdo del ratón.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void canvas_Click(object sender, EventArgs e)
         {
             switch (herramienta)
@@ -236,16 +376,27 @@ namespace Paint
             }
         }
 
+        /// <summary>
+        /// Detecta cuando se inicia la actividad dentro del picturebox.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void canvas_MouseDown(object sender, MouseEventArgs e)
         {
             if(e.Button == MouseButtons.Left)
             {
-                mouseDown = true; // o borrando
+                mouseDown = true;
                 cambios = true;
                 inicio = e.Location;
             }
         }
 
+        /// <summary>
+        /// Lleva a cabo los cambios procedentes en el picturebox cuando el raton se mueve sobre él
+        /// con el boton izquierdo pulsado.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void canvas_MouseMove(object sender, MouseEventArgs e)
         {
             fin = e.Location;
@@ -277,6 +428,11 @@ namespace Paint
             inicio = fin; 
         }
 
+        /// <summary>
+        /// Detecta el fin de la actividad sobre el picturebox.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void canvas_MouseUp(object sender, MouseEventArgs e)
         {
             if(e.Button == MouseButtons.Left){

@@ -1,5 +1,6 @@
-al abrir imagen poner el nombre de titulo
-tema de guardar/abrir imagenes. mirar bien el tema de editar imagenes ya creadas.
-el canvas se borra (con frecuencia) al darle al Alt y a veces cuando cambias de color, y no se por qué
-figuras
+tema de guardar/abrir imagenes. mirar bien el tema de editar imagenes ya creadas.***
+el canvas se borra (con frecuencia) al darle al Alt y a veces cuando cambias de color, y no se por qué***
+figuras****
 rellenar (?). si no usar fillregion
+preguntar si guardar al cerrar aplicacion
+PROBLEMAS A LA HORA DE GUARDAR IOEXCEPTION Y InteropServices.ExternalException***
