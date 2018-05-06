@@ -64,6 +64,10 @@ namespace Paint
 
             cboTamaños.DataSource = tamañosLapiz;
             cboTamaños.SelectedIndex = 0;
+
+            canvas.Image = new Bitmap(canvas.Width, canvas.Height);
+            g = Graphics.FromImage(canvas.Image);
+            g.FillRectangle(Brushes.White, canvas.ClientRectangle);
         }
 
         /// <summary>
@@ -202,11 +206,23 @@ namespace Paint
                     case DialogResult.Yes:
                         guardarToolStripMenuItem.PerformClick();
                         Text = "Sin título";
+                        canvas.Image = new Bitmap(canvas.Width, canvas.Height);
+                        g = Graphics.FromImage(canvas.Image);
+                        g.FillRectangle(Brushes.White, canvas.ClientRectangle);
+                        cambios = false;
+                        imagenAbierta = false;
+                        ruta = "";
+                        canvas.Invalidate();
                         break;
                     case DialogResult.No:
-                        canvas.Refresh();
-                        canvas.Image = null;
                         Text = "Sin título";
+                        canvas.Image = new Bitmap(canvas.Width, canvas.Height);
+                        g = Graphics.FromImage(canvas.Image);
+                        g.FillRectangle(Brushes.White, canvas.ClientRectangle);
+                        cambios = false;
+                        imagenAbierta = false;
+                        ruta = "";
+                        canvas.Invalidate();
                         break;
                     case DialogResult.Cancel:
                         break;
@@ -215,6 +231,12 @@ namespace Paint
             else
             {
                 Text = "Sin título";
+                canvas.Image = new Bitmap(canvas.Width, canvas.Height);
+                g = Graphics.FromImage(canvas.Image);
+                g.FillRectangle(Brushes.White, canvas.ClientRectangle);
+                cambios = false;
+                imagenAbierta = false;
+                ruta = "";
             }
         }
 
@@ -234,13 +256,11 @@ namespace Paint
                     switch (dr2)
                     {
                         case DialogResult.Yes:
-                            //saveFileDialog1.ShowDialog();
                             guardarToolStripMenuItem.PerformClick();
-                            //Falta el codigo de guardado
                             break;
                         case DialogResult.No:
-                            canvas.Refresh();
-                            canvas.Image = null;
+                            //canvas.Refresh();
+                            //canvas.Image = null;
                             break;
                         case DialogResult.Cancel:
                             break;
@@ -248,17 +268,14 @@ namespace Paint
                 }
 
                 canvas.Image = (Image)Image.FromFile(openFileDialog1.FileName).Clone();
+                g = Graphics.FromImage(canvas.Image);
                 imagenAbierta = true;
                 ruta = openFileDialog1.FileName;
                 formato = canvas.Image.RawFormat;
                 FileInfo f = new FileInfo(ruta);
                 Text = f.Name;
-                openFileDialog1.Dispose();
-                //string[] split = ruta.Split('.');
-                //if(split.Length > 1)
-                //{
-                //    formato = split[split.Length - 1];
-                //}
+                cambios = true;
+                //openFileDialog1.Dispose();                
             }
         }
 
@@ -288,13 +305,28 @@ namespace Paint
             }
             else
             {
-                saveFileDialog1.FilterIndex = -1;
+                saveFileDialog1.FilterIndex = 0;
             }
             DialogResult dr = saveFileDialog1.ShowDialog();
             if (dr == DialogResult.OK && saveFileDialog1.FileName != null)
             {
-                Image img = canvas.Image;
-                img.Save(saveFileDialog1.FileName);
+                canvas.Image.Save(saveFileDialog1.FileName);
+                ruta = saveFileDialog1.FileName;
+                switch (saveFileDialog1.FilterIndex)
+                {
+                    case 0:
+                        formato = ImageFormat.Png;
+                        break;
+                    case 1:
+                        formato = ImageFormat.Jpeg;
+                        break;
+                    case 2:
+                        formato = ImageFormat.Bmp;
+                        break;
+                    case 3:
+                        formato = ImageFormat.Gif;
+                        break;
+                }
             }
         }
 
@@ -310,39 +342,25 @@ namespace Paint
         /// <param name="e"></param>
         private void guardarToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (imagenAbierta)
+            if (imagenAbierta || ruta.Length != 0)
             {
-                Bitmap bmp = new Bitmap(canvas.Width, canvas.Height);
-                Graphics g = Graphics.FromImage(bmp);
-                Rectangle rect = canvas.RectangleToScreen(canvas.ClientRectangle);
-                g.CopyFromScreen(rect.Location, Point.Empty, canvas.Size);
-                g.Dispose();
+                //Bitmap bmp = new Bitmap(canvas.Width, canvas.Height);
+                //Graphics gr = Graphics.FromImage(bmp);
+                //Rectangle rect = canvas.RectangleToScreen(canvas.ClientRectangle);
+                //gr.CopyFromScreen(rect.Location, Point.Empty, canvas.Size);
+                //gr.Dispose();
 
-                //Image img = canvas.Image;
-
-                //FileInfo fi = new FileInfo(ruta);
-                //DirectoryInfo di = new DirectoryInfo(fi.DirectoryName);
-                //foreach(FileInfo f in di.GetFiles())
+                //try
                 //{
-                //    if(f.FullName == ruta)
-                //    {
-                //        try
-                //        {
-                //            f.Delete();
-                //            break;
-                //        }
-                //        catch (IOException) { }
-                //    }
+                    //if (File.Exists(ruta))
+                    //{
+                    //    File.Delete(ruta);
+                    //}
                 //}
-                try
-                {
-                    if (File.Exists(ruta))
-                    {
-                        File.Delete(ruta);
-                    }
-                }
-                catch (IOException) { }
-                bmp.Save(ruta, formato);
+                //catch (IOException) { }
+
+                Image aux = canvas.Image;
+                aux.Save(ruta, formato);
             }
             else
             {   
@@ -374,6 +392,7 @@ namespace Paint
                 case Herramientas.Figura:
                     break;
             }
+            canvas.Invalidate();
         }
 
         /// <summary>
@@ -425,7 +444,8 @@ namespace Paint
                 } 
             }
 
-            inicio = fin; 
+            inicio = fin;
+            canvas.Invalidate();
         }
 
         /// <summary>
