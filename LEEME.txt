@@ -8,3 +8,5 @@
 	· Me pongo con el tema de abrir/guardar archivos.
 	· Lo que es la estructura la tengo, me falta finalizar (no puedo por ciertos problemas, posible tutoria).
 	· Empiezo a pensar el tema de las figuras.
+06/05/2018
+	· Avances en el tema de guardado/modificado de imágenes abiertas.
