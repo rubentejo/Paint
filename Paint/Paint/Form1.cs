@@ -50,9 +50,9 @@ namespace Paint
 
             Text = "Sin título";
             g = canvas.CreateGraphics();
-            tamañoLapiz = 1;
-            tamañoGoma = 5;
-            tamañoBrocha = 5;
+            tamañoLapiz = tamañosLapiz[0];
+            tamañoGoma = tamañosGoma[0];
+            tamañoBrocha = tamañosBrocha[0];
             p = new Pen(Color.Black, tamañoLapiz);
             p.StartCap = System.Drawing.Drawing2D.LineCap.Round;
             p.EndCap = p.StartCap;
