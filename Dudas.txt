@@ -1,5 +1,4 @@
 Dentro del VS, algunos archivos del proyecto tienen un candado (protegido) referente al Git, no se por qué motivo (a que se refiere ese candado).
 No se por qué los resources no se pasan al Git. Esto tiene relacion con lo anterior.
-El tema del guardado.
 Dibujado de figuras (creo que debería hacerlo bien pero no lo hace).
-Ahora mismo no dejo maximizar la ventana porque sino recuadro de dibujo se corta. De momento no encontré solución a eso.
+Ahora mismo no dejo maximizar la ventana porque sino recuadro de dibujo se corta. De momento no encontré solución a eso. Problemas con el tamaño de las imagenes, al abrir imagenes grandes/pequeñas.

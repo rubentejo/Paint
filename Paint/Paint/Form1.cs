@@ -211,7 +211,7 @@ namespace Paint
             {
                 rellenoActivado = true;
                 relleno = Herramientas.Cuadrado;
-                herramienta = Herramientas.Cuadrado;                
+                herramienta = Herramientas.Cuadrado;
                 grbTamaños.Enabled = false;
             }
             else if ((Button)sender == btnLinea)
@@ -226,7 +226,7 @@ namespace Paint
                 {
                     relleno = Herramientas.Cuadrado;
                 }
-                    herramienta = Herramientas.Cuadrado;
+                herramienta = Herramientas.Cuadrado;
                 grbTamaños.Enabled = false;
             }
             else if ((Button)sender == btnTriangulo)
@@ -235,7 +235,7 @@ namespace Paint
                 {
                     relleno = Herramientas.Triangulo;
                 }
-                    herramienta = Herramientas.Triangulo;
+                herramienta = Herramientas.Triangulo;
                 grbTamaños.Enabled = false;
             }
             else if ((Button)sender == btnCirculo)
@@ -244,7 +244,7 @@ namespace Paint
                 {
                     relleno = Herramientas.Circulo;
                 }
-                    herramienta = Herramientas.Circulo;
+                herramienta = Herramientas.Circulo;
                 grbTamaños.Enabled = false;
             }
         }
@@ -313,28 +313,25 @@ namespace Paint
                 if (cambios)
                 {
                     DialogResult dr2 = MessageBox.Show("¿Desea guardar los cambios de " + Text + "?", "Paint", MessageBoxButtons.YesNoCancel);
-                    switch (dr2)
+                    if (dr2 == DialogResult.Yes)
                     {
-                        case DialogResult.Yes:
-                            guardarToolStripMenuItem.PerformClick();
-                            break;
-                        case DialogResult.No:
-                            //canvas.Refresh();
-                            //canvas.Image = null;
-                            break;
-                        case DialogResult.Cancel:
-                            break;
+                        guardarToolStripMenuItem.PerformClick();
                     }
                 }
 
-                canvas.Image = (Image)Image.FromFile(openFileDialog1.FileName).Clone();
-                g = Graphics.FromImage(canvas.Image);
+
+                //canvas.Image = Image.FromFile(openFileDialog1.FileName);
+                //g = Graphics.FromImage(canvas.Image);
+                //canvas.Invalidate();
+                g.Clear(Color.White);
+                r = new Rectangle(new Point(0, 0), Image.FromFile(openFileDialog1.FileName).Size);
+                g.DrawImage(Image.FromFile(openFileDialog1.FileName), r);
                 imagenAbierta = true;
                 ruta = openFileDialog1.FileName;
                 formato = canvas.Image.RawFormat;
                 FileInfo f = new FileInfo(ruta);
                 string aux = "";
-                for(int i = 0;i < f.Name.Length; i++)
+                for (int i = 0; i < f.Name.Length; i++)
                 {
                     if (f.Name[i] != '.')
                     {
@@ -343,7 +340,7 @@ namespace Paint
                     else break;
                 }
                 Text = aux;
-                cambios = true;
+                cambios = false;
                 //openFileDialog1.Dispose();                
             }
         }
@@ -358,19 +355,19 @@ namespace Paint
             saveFileDialog1.FileName = Text;
             if (formato == ImageFormat.Png)
             {
-                saveFileDialog1.FilterIndex = 0;
+                saveFileDialog1.FilterIndex = 1;
             }
             else if (formato == ImageFormat.Jpeg)
             {
-                saveFileDialog1.FilterIndex = 1;
+                saveFileDialog1.FilterIndex = 2;
             }
             else if (formato == ImageFormat.Bmp)
             {
-                saveFileDialog1.FilterIndex = 2;
+                saveFileDialog1.FilterIndex = 3;
             }
             else if (formato == ImageFormat.Gif)
             {
-                saveFileDialog1.FilterIndex = 3;
+                saveFileDialog1.FilterIndex = 4;
             }
             else
             {
@@ -381,19 +378,30 @@ namespace Paint
             {
                 canvas.Image.Save(saveFileDialog1.FileName);
                 ruta = saveFileDialog1.FileName;
+                FileInfo f = new FileInfo(ruta);
+                string aux = "";
+                for (int i = 0; i < f.Name.Length; i++)
+                {
+                    if (f.Name[i] != '.')
+                    {
+                        aux += f.Name[i];
+                    }
+                    else break;
+                }
+                Text = aux;
                 cambios = false;
                 switch (saveFileDialog1.FilterIndex)
                 {
-                    case 0:
+                    case 1:
                         formato = ImageFormat.Png;
                         break;
-                    case 1:
+                    case 2:
                         formato = ImageFormat.Jpeg;
                         break;
-                    case 2:
+                    case 3:
                         formato = ImageFormat.Bmp;
                         break;
-                    case 3:
+                    case 4:
                         formato = ImageFormat.Gif;
                         break;
                 }
@@ -431,6 +439,16 @@ namespace Paint
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Sale de la aplicación.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void salirToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
         /// <summary>
@@ -526,29 +544,18 @@ namespace Paint
         /// <param name="e"></param>
         private void guardarToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (imagenAbierta || ruta.Length != 0)
+            if (cambios)
             {
-                //Bitmap bmp = new Bitmap(canvas.Width, canvas.Height);
-                //Graphics gr = Graphics.FromImage(bmp);
-                //Rectangle rect = canvas.RectangleToScreen(canvas.ClientRectangle);
-                //gr.CopyFromScreen(rect.Location, Point.Empty, canvas.Size);
-                //gr.Dispose();
-
-                //try
-                //{
-                //if (File.Exists(ruta))
-                //{
-                //    File.Delete(ruta);
-                //}
-                //}
-                //catch (IOException) { }
-
-                Image aux = canvas.Image;
-                aux.Save(ruta, formato);
-            }
-            else
-            {
-                guardarComoToolStripMenuItem.PerformClick();
+                if (imagenAbierta || ruta.Length != 0)
+                {
+                    Image aux = canvas.Image;
+                    aux.Save(ruta, formato);
+                    cambios = false;
+                }
+                else
+                {
+                    guardarComoToolStripMenuItem.PerformClick();
+                }
             }
         }
 
@@ -598,7 +605,7 @@ namespace Paint
         /// <param name="e"></param>
         private void canvas_MouseMove(object sender, MouseEventArgs e)
         {
-            lblCoordenadas.Text = e.X+", "+ e.Y;
+            lblCoordenadas.Text = e.X + ", " + e.Y;
             fin = e.Location;
 
             if (mouseDown)
@@ -631,19 +638,19 @@ namespace Paint
                     case Herramientas.Cuadrado:
                         imagenAux = canvas.Image;
                         g.Clear(Color.White);
-                        //g.DrawImage(imagenAux, canvas.ClientRectangle);
+                        g.DrawImage(imagenAux, canvas.ClientRectangle);
                         canvas.Image = imagenAux;
                         g = Graphics.FromImage(canvas.Image);
 
-                        if(inicio.X - fin.X > 0 && inicio.Y - fin.Y > 0)
+                        if (inicio.X - fin.X > 0 && inicio.Y - fin.Y > 0)
                         {
                             r = new Rectangle(fin, new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
                         }
-                        else if(inicio.X - fin.X < 0 && inicio.Y - fin.Y > 0)
+                        else if (inicio.X - fin.X < 0 && inicio.Y - fin.Y > 0)
                         {
                             r = new Rectangle(new Point(inicio.X, fin.Y), new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
                         }
-                        else if(inicio.X - fin.X > 0 && inicio.Y - fin.Y < 0)
+                        else if (inicio.X - fin.X > 0 && inicio.Y - fin.Y < 0)
                         {
                             r = new Rectangle(new Point(fin.X, inicio.Y), new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
                         }
@@ -651,11 +658,13 @@ namespace Paint
                         {
                             r = new Rectangle(inicio, new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
                         }
+
                         if (rellenoActivado)
                         {
                             g.FillRectangle(new SolidBrush(colorActual.BackColor), r);
                         }
-                        else{
+                        else
+                        {
                             g.DrawRectangle(new Pen(colorActual.BackColor, 3), r);
                         }
                         break;
@@ -682,9 +691,11 @@ namespace Paint
                         {
                             r = new Rectangle(inicio, new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
                         }
+
                         puntosTriangulo[0] = new Point(r.Top, r.Right / 2);
                         puntosTriangulo[1] = new Point(r.Bottom, r.Right);
                         puntosTriangulo[2] = new Point(r.Bottom, r.Left);
+
                         if (rellenoActivado)
                         {
                             g.FillPolygon(new SolidBrush(colorActual.BackColor), puntosTriangulo);
@@ -718,6 +729,7 @@ namespace Paint
                         {
                             r = new Rectangle(inicio, new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
                         }
+
                         if (rellenoActivado)
                         {
                             g.FillEllipse(new SolidBrush(colorActual.BackColor), r);
@@ -742,16 +754,9 @@ namespace Paint
         {
             if (e.Button == MouseButtons.Left)
             {
-                //switch (herramienta)
-                //{
-                //    case Herramientas.Linea:
-                //        g.DrawImage(imagenAux, new PointF(0,0));
-                //        g.DrawLine(new Pen(colorActual.BackColor, 3), inicio, fin);
-                //        imagenAux = null;
-                //        break;
-                //}
                 mouseDown = false;
-                //canvas.Invalidate();
+                if (imagenAux != null) g.DrawImage(imagenAux, canvas.ClientRectangle);
+                canvas.Invalidate();
             }
         }
     }
