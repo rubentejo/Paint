@@ -91,5 +91,17 @@
   <ItemGroup>
     <None Include="bin\Debug\brocha.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\linea.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\cuadrado.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\triangulo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\circulo.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

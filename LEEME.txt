@@ -3,10 +3,18 @@
 	· Creo el greed de colores y la funcionalidad de dibujado.
 22/04/2018:
 	· La aplicacion ya dibuja (lapiz y brocha), borra, cambia de color, cambia el grosor de las herramientas..
-	· Empiezo a pensar el tema de abrir/guardar archivos
+	· Empiezo a pensar el tema de abrir/guardar archivos.
 29/04/2018:
 	· Me pongo con el tema de abrir/guardar archivos.
 	· Lo que es la estructura la tengo, me falta finalizar (no puedo por ciertos problemas, posible tutoria).
 	· Empiezo a pensar el tema de las figuras.
 06/05/2018
 	· Avances en el tema de guardado/modificado de imágenes abiertas.
+12/05/2018
+	· Confirmación de guardado al cerrar la aplicación.
+	· Control de teclado.
+	· Avances en el tema de dibujado de figuras (pienso que si soluciono el "error" que tengo este tema esta zanjado).
+13/05/2018
+	· Añadí 3 nuevos tipos de figura, pero sigo teniendo el mismo problema que ayer.
+	· Coordenadas del raton sobre el lienzo.
+	· Funcionalidad de relleno (algo diferente a la del paint original).

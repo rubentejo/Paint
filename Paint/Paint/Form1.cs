@@ -17,22 +17,25 @@ namespace Paint
     /// </summary>
     public enum Herramientas
     {
-        Lapiz, Goma, Brocha, Relleno, Figura
+        Lapiz, Goma, Brocha, Linea, Cuadrado, Triangulo, Circulo
     }
 
     public partial class Form1 : Form
     {
         Graphics g;
         Pen p;
-        bool mouseDown, cambios, imagenAbierta;
+        bool mouseDown, cambios, imagenAbierta, rellenoActivado;
         string ruta = "";
         ImageFormat formato;
         int tamañoLapiz, tamañoGoma, tamañoBrocha;
         int[] tamañosLapiz = { 1, 2, 3, 4, 5 };
-        int[] tamañosGoma = { 5, 10, 15, 20, 25 };
+        int[] tamañosGoma = { 10, 15, 20, 25, 30 };
         int[] tamañosBrocha = { 5, 6, 7, 8, 9, 10 };
         Point inicio, fin;
-        Herramientas herramienta;
+        Point[] puntosTriangulo = new Point[3];
+        Image imagenAux;
+        Rectangle r;
+        Herramientas herramienta, relleno;
 
         public Form1()
         {
@@ -51,7 +54,7 @@ namespace Paint
             Text = "Sin título";
             g = canvas.CreateGraphics();
             tamañoLapiz = 1;
-            tamañoGoma = 5;
+            tamañoGoma = 10;
             tamañoBrocha = 5;
             p = new Pen(Color.Black, tamañoLapiz);
             p.StartCap = System.Drawing.Drawing2D.LineCap.Round;
@@ -72,21 +75,39 @@ namespace Paint
 
         /// <summary>
         /// Devuelve el índice del item dentro del combobox. En caso de no encontrarlo
-        /// devuelve -1;
+        /// devuelve -1.
         /// </summary>
         /// <param name="cbo"></param>
         /// <param name="item"></param>
         /// <returns>Índice del item</returns>
         private int buscaCombo(ComboBox cbo, int item)
         {
-            foreach(object aux in cbo.Items)
+            foreach (object aux in cbo.Items)
             {
-                if((int)aux == item)
+                if ((int)aux == item)
                 {
                     return cbo.Items.IndexOf(aux);
                 }
             }
+            return -1;
+        }
 
+        /// <summary>
+        /// Devuelve el índice del elemento dentro del array. En caso de no encontralo
+        /// devuelve -1.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="elemento"></param>
+        /// <returns></returns>
+        private int buscaIndice(int[] array, int elemento)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (elemento == array[i])
+                {
+                    return i;
+                }
+            }
             return -1;
         }
 
@@ -130,8 +151,9 @@ namespace Paint
         /// <param name="e"></param>
         private void herramientas_Click(object sender, EventArgs e)
         {
-            if((Button)sender == btnLapiz)
+            if ((Button)sender == btnLapiz)
             {
+                rellenoActivado = false;
                 grbTamaños.Enabled = true;
                 g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
                 herramienta = Herramientas.Lapiz;
@@ -150,6 +172,7 @@ namespace Paint
             }
             else if ((Button)sender == btnGoma)
             {
+                rellenoActivado = false;
                 grbTamaños.Enabled = true;
                 herramienta = Herramientas.Goma;
                 lblTamaños.Text = "Tamaño de la goma:";
@@ -167,6 +190,7 @@ namespace Paint
             }
             else if ((Button)sender == btnBrocha)
             {
+                rellenoActivado = false;
                 grbTamaños.Enabled = true;
                 g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 herramienta = Herramientas.Brocha;
@@ -185,7 +209,42 @@ namespace Paint
             }
             else if ((Button)sender == btnRelleno)
             {
-                herramienta = Herramientas.Relleno;
+                rellenoActivado = true;
+                relleno = Herramientas.Cuadrado;
+                herramienta = Herramientas.Cuadrado;                
+                grbTamaños.Enabled = false;
+            }
+            else if ((Button)sender == btnLinea)
+            {
+                rellenoActivado = false;
+                herramienta = Herramientas.Linea;
+                grbTamaños.Enabled = false;
+            }
+            else if ((Button)sender == btnCuadrado)
+            {
+                if (rellenoActivado)
+                {
+                    relleno = Herramientas.Cuadrado;
+                }
+                    herramienta = Herramientas.Cuadrado;
+                grbTamaños.Enabled = false;
+            }
+            else if ((Button)sender == btnTriangulo)
+            {
+                if (rellenoActivado)
+                {
+                    relleno = Herramientas.Triangulo;
+                }
+                    herramienta = Herramientas.Triangulo;
+                grbTamaños.Enabled = false;
+            }
+            else if ((Button)sender == btnCirculo)
+            {
+                if (rellenoActivado)
+                {
+                    relleno = Herramientas.Circulo;
+                }
+                    herramienta = Herramientas.Circulo;
                 grbTamaños.Enabled = false;
             }
         }
@@ -200,20 +259,21 @@ namespace Paint
         {
             if (cambios)
             {
-                DialogResult dr = MessageBox.Show("Paint", "¿Desea guardar los cambios de " + Text + "?", MessageBoxButtons.YesNoCancel);
+                DialogResult dr = MessageBox.Show("¿Desea guardar los cambios de " + Text + "?", "Paint", MessageBoxButtons.YesNoCancel);
                 switch (dr)
                 {
                     case DialogResult.Yes:
                         guardarToolStripMenuItem.PerformClick();
-                        Text = "Sin título";
-                        canvas.Image = new Bitmap(canvas.Width, canvas.Height);
-                        g = Graphics.FromImage(canvas.Image);
-                        g.FillRectangle(Brushes.White, canvas.ClientRectangle);
-                        cambios = false;
-                        imagenAbierta = false;
-                        ruta = "";
-                        canvas.Invalidate();
-                        break;
+                        //Text = "Sin título";
+                        //canvas.Image = new Bitmap(canvas.Width, canvas.Height);
+                        //g = Graphics.FromImage(canvas.Image);
+                        //g.FillRectangle(Brushes.White, canvas.ClientRectangle);
+                        //cambios = false;
+                        //imagenAbierta = false;
+                        //ruta = "";
+                        //canvas.Invalidate();
+                        //break;
+                        goto case DialogResult.No;
                     case DialogResult.No:
                         Text = "Sin título";
                         canvas.Image = new Bitmap(canvas.Width, canvas.Height);
@@ -248,11 +308,11 @@ namespace Paint
         private void abrirToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult dr = openFileDialog1.ShowDialog();
-            if(dr == DialogResult.OK && openFileDialog1.FileName != null)
+            if (dr == DialogResult.OK && openFileDialog1.FileName != null)
             {
                 if (cambios)
                 {
-                    DialogResult dr2 = MessageBox.Show("Paint", "¿Desea guardar los cambios de " + Text + "?", MessageBoxButtons.YesNoCancel);
+                    DialogResult dr2 = MessageBox.Show("¿Desea guardar los cambios de " + Text + "?", "Paint", MessageBoxButtons.YesNoCancel);
                     switch (dr2)
                     {
                         case DialogResult.Yes:
@@ -273,7 +333,16 @@ namespace Paint
                 ruta = openFileDialog1.FileName;
                 formato = canvas.Image.RawFormat;
                 FileInfo f = new FileInfo(ruta);
-                Text = f.Name;
+                string aux = "";
+                for(int i = 0;i < f.Name.Length; i++)
+                {
+                    if (f.Name[i] != '.')
+                    {
+                        aux += f.Name[i];
+                    }
+                    else break;
+                }
+                Text = aux;
                 cambios = true;
                 //openFileDialog1.Dispose();                
             }
@@ -312,6 +381,7 @@ namespace Paint
             {
                 canvas.Image.Save(saveFileDialog1.FileName);
                 ruta = saveFileDialog1.FileName;
+                cambios = false;
                 switch (saveFileDialog1.FilterIndex)
                 {
                     case 0:
@@ -330,9 +400,123 @@ namespace Paint
             }
         }
 
+        /// <summary>
+        /// Ofrece información acerca de la aplicación.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void acercaDePaintToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Acerca de Paint", "Este Paint ha sido realizado por Rubén Tejo Pereira.");
+            MessageBox.Show("Este Paint ha sido realizado por Rubén Tejo Pereira.", "Acerca de Paint");
+        }
+
+        /// <summary>
+        /// Antes de cerrar la aplicación se pregunta si se desean guardar los cambios.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (cambios)
+            {
+                DialogResult dr = MessageBox.Show("¿Desea guardar los cambios de " + Text + "?", "Paint", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                switch (dr)
+                {
+                    case DialogResult.Yes:
+                        guardarToolStripMenuItem.PerformClick();
+                        if (cambios) e.Cancel = true;
+                        break;
+                    case DialogResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Permite cambiar el tamaño de la herramienta (lápiz, goma o brocha) mediante
+        /// la tecla CTRL y +/-.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            //ModifierKeys.HasFlag(Keys.Control)
+            if ((ModifierKeys & Keys.Control) == Keys.Control)
+            {
+                int auxIndice;
+
+                if (e.KeyCode == Keys.Add)
+                {
+                    switch (herramienta)
+                    {
+                        case Herramientas.Lapiz:
+                            auxIndice = buscaIndice(tamañosLapiz, tamañoLapiz);
+                            if (auxIndice + 1 <= tamañosLapiz.Length - 1)
+                            {
+                                tamañoLapiz = tamañosLapiz[auxIndice + 1];
+                                cboTamaños.SelectedIndex = buscaCombo(cboTamaños, tamañoLapiz);
+                            }
+                            break;
+                        case Herramientas.Goma:
+                            auxIndice = buscaIndice(tamañosGoma, tamañoGoma);
+                            if (auxIndice + 1 <= tamañosGoma.Length - 1)
+                            {
+                                tamañoGoma = tamañosGoma[auxIndice + 1];
+                                cboTamaños.SelectedIndex = buscaCombo(cboTamaños, tamañoGoma);
+                            }
+                            break;
+                        case Herramientas.Brocha:
+                            auxIndice = buscaIndice(tamañosBrocha, tamañoBrocha);
+                            if (auxIndice + 1 <= tamañosBrocha.Length - 1)
+                            {
+                                tamañoBrocha = tamañosBrocha[auxIndice + 1];
+                                cboTamaños.SelectedIndex = buscaCombo(cboTamaños, tamañoBrocha);
+                            }
+                            break;
+                    }
+                }
+                else if (e.KeyCode == Keys.Subtract)
+                {
+                    switch (herramienta)
+                    {
+                        case Herramientas.Lapiz:
+                            auxIndice = buscaIndice(tamañosLapiz, tamañoLapiz);
+                            if (auxIndice - 1 >= 0)
+                            {
+                                tamañoLapiz = tamañosLapiz[auxIndice - 1];
+                                cboTamaños.SelectedIndex = buscaCombo(cboTamaños, tamañoLapiz);
+                            }
+                            break;
+                        case Herramientas.Goma:
+                            auxIndice = buscaIndice(tamañosGoma, tamañoGoma);
+                            if (auxIndice - 1 >= 0)
+                            {
+                                tamañoGoma = tamañosGoma[auxIndice - 1];
+                                cboTamaños.SelectedIndex = buscaCombo(cboTamaños, tamañoGoma);
+                            }
+                            break;
+                        case Herramientas.Brocha:
+                            auxIndice = buscaIndice(tamañosBrocha, tamañoBrocha);
+                            if (auxIndice - 1 >= 0)
+                            {
+                                tamañoBrocha = tamañosBrocha[auxIndice - 1];
+                                cboTamaños.SelectedIndex = buscaCombo(cboTamaños, tamañoBrocha);
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Resetea el label de coordenadas
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void canvas_MouseLeave(object sender, EventArgs e)
+        {
+            lblCoordenadas.Text = "Coordenadas";
         }
 
         /// <summary>
@@ -352,10 +536,10 @@ namespace Paint
 
                 //try
                 //{
-                    //if (File.Exists(ruta))
-                    //{
-                    //    File.Delete(ruta);
-                    //}
+                //if (File.Exists(ruta))
+                //{
+                //    File.Delete(ruta);
+                //}
                 //}
                 //catch (IOException) { }
 
@@ -363,7 +547,7 @@ namespace Paint
                 aux.Save(ruta, formato);
             }
             else
-            {   
+            {
                 guardarComoToolStripMenuItem.PerformClick();
             }
         }
@@ -387,10 +571,6 @@ namespace Paint
                 case Herramientas.Brocha:
                     g.FillEllipse(new SolidBrush(colorActual.BackColor), inicio.X, inicio.Y, tamañoBrocha, tamañoBrocha);
                     break;
-                case Herramientas.Relleno:
-                    break;
-                case Herramientas.Figura:
-                    break;
             }
             canvas.Invalidate();
         }
@@ -402,7 +582,7 @@ namespace Paint
         /// <param name="e"></param>
         private void canvas_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 mouseDown = true;
                 cambios = true;
@@ -418,6 +598,7 @@ namespace Paint
         /// <param name="e"></param>
         private void canvas_MouseMove(object sender, MouseEventArgs e)
         {
+            lblCoordenadas.Text = e.X+", "+ e.Y;
             fin = e.Location;
 
             if (mouseDown)
@@ -428,6 +609,7 @@ namespace Paint
                         p.Color = colorActual.BackColor;
                         p.Width = tamañoLapiz;
                         g.DrawLine(p, inicio, fin);
+                        inicio = fin;
                         break;
                     case Herramientas.Goma:
                         g.FillRectangle(new SolidBrush(canvas.BackColor), e.X, e.Y, tamañoGoma, tamañoGoma);
@@ -436,15 +618,118 @@ namespace Paint
                         p.Color = colorActual.BackColor;
                         p.Width = tamañoBrocha;
                         g.DrawLine(p, inicio, fin);
+                        inicio = fin;
                         break;
-                    case Herramientas.Relleno:
+                    case Herramientas.Linea:
+                        imagenAux = canvas.Image;
+                        g.Clear(Color.White);
+                        //g.DrawImage(imagenAux, canvas.ClientRectangle);
+                        canvas.Image = imagenAux;
+                        g = Graphics.FromImage(canvas.Image);
+                        g.DrawLine(new Pen(colorActual.BackColor, 3), inicio, fin);
                         break;
-                    case Herramientas.Figura:
+                    case Herramientas.Cuadrado:
+                        imagenAux = canvas.Image;
+                        g.Clear(Color.White);
+                        //g.DrawImage(imagenAux, canvas.ClientRectangle);
+                        canvas.Image = imagenAux;
+                        g = Graphics.FromImage(canvas.Image);
+
+                        if(inicio.X - fin.X > 0 && inicio.Y - fin.Y > 0)
+                        {
+                            r = new Rectangle(fin, new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
+                        }
+                        else if(inicio.X - fin.X < 0 && inicio.Y - fin.Y > 0)
+                        {
+                            r = new Rectangle(new Point(inicio.X, fin.Y), new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
+                        }
+                        else if(inicio.X - fin.X > 0 && inicio.Y - fin.Y < 0)
+                        {
+                            r = new Rectangle(new Point(fin.X, inicio.Y), new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
+                        }
+                        else
+                        {
+                            r = new Rectangle(inicio, new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
+                        }
+                        if (rellenoActivado)
+                        {
+                            g.FillRectangle(new SolidBrush(colorActual.BackColor), r);
+                        }
+                        else{
+                            g.DrawRectangle(new Pen(colorActual.BackColor, 3), r);
+                        }
                         break;
-                } 
+                    case Herramientas.Triangulo:
+                        imagenAux = canvas.Image;
+                        g.Clear(Color.White);
+                        //g.DrawImage(imagenAux, canvas.ClientRectangle);
+                        canvas.Image = imagenAux;
+                        g = Graphics.FromImage(canvas.Image);
+
+                        if (inicio.X - fin.X > 0 && inicio.Y - fin.Y > 0)
+                        {
+                            r = new Rectangle(fin, new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
+                        }
+                        else if (inicio.X - fin.X < 0 && inicio.Y - fin.Y > 0)
+                        {
+                            r = new Rectangle(new Point(inicio.X, fin.Y), new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
+                        }
+                        else if (inicio.X - fin.X > 0 && inicio.Y - fin.Y < 0)
+                        {
+                            r = new Rectangle(new Point(fin.X, inicio.Y), new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
+                        }
+                        else
+                        {
+                            r = new Rectangle(inicio, new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
+                        }
+                        puntosTriangulo[0] = new Point(r.Top, r.Right / 2);
+                        puntosTriangulo[1] = new Point(r.Bottom, r.Right);
+                        puntosTriangulo[2] = new Point(r.Bottom, r.Left);
+                        if (rellenoActivado)
+                        {
+                            g.FillPolygon(new SolidBrush(colorActual.BackColor), puntosTriangulo);
+                        }
+                        else
+                        {
+                            g.DrawPolygon(new Pen(colorActual.BackColor, 3), puntosTriangulo);
+                        }
+                        g.DrawRectangle(new Pen(colorActual.BackColor, 3), r);
+                        break;
+                    case Herramientas.Circulo:
+                        imagenAux = canvas.Image;
+                        g.Clear(Color.White);
+                        //g.DrawImage(imagenAux, canvas.ClientRectangle);
+                        canvas.Image = imagenAux;
+                        g = Graphics.FromImage(canvas.Image);
+
+                        if (inicio.X - fin.X > 0 && inicio.Y - fin.Y > 0)
+                        {
+                            r = new Rectangle(fin, new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
+                        }
+                        else if (inicio.X - fin.X < 0 && inicio.Y - fin.Y > 0)
+                        {
+                            r = new Rectangle(new Point(inicio.X, fin.Y), new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
+                        }
+                        else if (inicio.X - fin.X > 0 && inicio.Y - fin.Y < 0)
+                        {
+                            r = new Rectangle(new Point(fin.X, inicio.Y), new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
+                        }
+                        else
+                        {
+                            r = new Rectangle(inicio, new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
+                        }
+                        if (rellenoActivado)
+                        {
+                            g.FillEllipse(new SolidBrush(colorActual.BackColor), r);
+                        }
+                        else
+                        {
+                            g.DrawEllipse(new Pen(colorActual.BackColor, 3), r);
+                        }
+                        break;
+                }
             }
 
-            inicio = fin;
             canvas.Invalidate();
         }
 
@@ -455,8 +740,18 @@ namespace Paint
         /// <param name="e"></param>
         private void canvas_MouseUp(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Left){
+            if (e.Button == MouseButtons.Left)
+            {
+                //switch (herramienta)
+                //{
+                //    case Herramientas.Linea:
+                //        g.DrawImage(imagenAux, new PointF(0,0));
+                //        g.DrawLine(new Pen(colorActual.BackColor, 3), inicio, fin);
+                //        imagenAux = null;
+                //        break;
+                //}
                 mouseDown = false;
+                //canvas.Invalidate();
             }
         }
     }
