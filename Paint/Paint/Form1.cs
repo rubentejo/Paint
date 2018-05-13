@@ -320,12 +320,12 @@ namespace Paint
                 }
 
 
-                //canvas.Image = Image.FromFile(openFileDialog1.FileName);
-                //g = Graphics.FromImage(canvas.Image);
-                //canvas.Invalidate();
-                g.Clear(Color.White);
-                r = new Rectangle(new Point(0, 0), Image.FromFile(openFileDialog1.FileName).Size);
-                g.DrawImage(Image.FromFile(openFileDialog1.FileName), r);
+                canvas.Image = new Bitmap(openFileDialog1.FileName);// Image.FromFile(openFileDialog1.FileName);
+                g = Graphics.FromImage(canvas.Image);
+                canvas.Invalidate();
+                //g.Clear(Color.White);
+                //r = new Rectangle(new Point(0, 0), Image.FromFile(openFileDialog1.FileName).Size);
+                //g.DrawImage(Image.FromFile(openFileDialog1.FileName), r);
                 imagenAbierta = true;
                 ruta = openFileDialog1.FileName;
                 formato = canvas.Image.RawFormat;
@@ -534,7 +534,7 @@ namespace Paint
         /// <param name="e"></param>
         private void canvas_MouseLeave(object sender, EventArgs e)
         {
-            lblCoordenadas.Text = "Coordenadas";
+            lblCoordenadas.Text = "";
         }
 
         /// <summary>
@@ -548,8 +548,8 @@ namespace Paint
             {
                 if (imagenAbierta || ruta.Length != 0)
                 {
-                    Image aux = canvas.Image;
-                    aux.Save(ruta, formato);
+                    //Image aux = canvas.Image;
+                    canvas.Image.Save(ruta, formato);
                     cambios = false;
                 }
                 else
@@ -692,9 +692,9 @@ namespace Paint
                             r = new Rectangle(inicio, new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
                         }
 
-                        puntosTriangulo[0] = new Point(r.Top, r.Right / 2);
-                        puntosTriangulo[1] = new Point(r.Bottom, r.Right);
-                        puntosTriangulo[2] = new Point(r.Bottom, r.Left);
+                        puntosTriangulo[0] = new Point(r.Right / 2, r.Top);
+                        puntosTriangulo[1] = new Point(r.Right, r.Bottom);
+                        puntosTriangulo[2] = new Point(r.Left, r.Bottom);
 
                         if (rellenoActivado)
                         {

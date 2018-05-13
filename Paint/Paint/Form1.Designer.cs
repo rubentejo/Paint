@@ -577,7 +577,7 @@
             // 
             this.panel3.Controls.Add(this.lblCoordenadas);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(0, 535);
+            this.panel3.Location = new System.Drawing.Point(0, 541);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(706, 20);
             this.panel3.TabIndex = 3;
@@ -598,16 +598,16 @@
             this.panel2.Location = new System.Drawing.Point(0, 124);
             this.panel2.Name = "panel2";
             this.panel2.Padding = new System.Windows.Forms.Padding(7);
-            this.panel2.Size = new System.Drawing.Size(706, 411);
+            this.panel2.Size = new System.Drawing.Size(706, 417);
             this.panel2.TabIndex = 4;
             // 
             // canvas
             // 
             this.canvas.BackColor = System.Drawing.Color.White;
-            this.canvas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.canvas.Location = new System.Drawing.Point(7, 7);
             this.canvas.Name = "canvas";
             this.canvas.Size = new System.Drawing.Size(692, 397);
+            this.canvas.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.canvas.TabIndex = 3;
             this.canvas.TabStop = false;
             this.canvas.Click += new System.EventHandler(this.canvas_Click);
@@ -620,12 +620,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(706, 555);
+            this.ClientSize = new System.Drawing.Size(706, 561);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
@@ -646,6 +645,7 @@
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
