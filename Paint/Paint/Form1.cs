@@ -33,7 +33,8 @@ namespace Paint
         int[] tamañosBrocha = { 5, 6, 7, 8, 9, 10 };
         Point inicio, fin;
         Point[] puntosTriangulo = new Point[3];
-        Image imagenAux;
+        Bitmap bmpAux;
+        Image imagenAux, imagenAux2;
         Rectangle r;
         Herramientas herramienta, relleno;
 
@@ -264,15 +265,6 @@ namespace Paint
                 {
                     case DialogResult.Yes:
                         guardarToolStripMenuItem.PerformClick();
-                        //Text = "Sin título";
-                        //canvas.Image = new Bitmap(canvas.Width, canvas.Height);
-                        //g = Graphics.FromImage(canvas.Image);
-                        //g.FillRectangle(Brushes.White, canvas.ClientRectangle);
-                        //cambios = false;
-                        //imagenAbierta = false;
-                        //ruta = "";
-                        //canvas.Invalidate();
-                        //break;
                         goto case DialogResult.No;
                     case DialogResult.No:
                         Text = "Sin título";
@@ -319,13 +311,10 @@ namespace Paint
                     }
                 }
 
-
-                canvas.Image = new Bitmap(openFileDialog1.FileName);// Image.FromFile(openFileDialog1.FileName);
+                //imagenAux2 = Image.FromFile(openFileDialog1.FileName);
+                canvas.Image = Image.FromFile(openFileDialog1.FileName);
                 g = Graphics.FromImage(canvas.Image);
                 canvas.Invalidate();
-                //g.Clear(Color.White);
-                //r = new Rectangle(new Point(0, 0), Image.FromFile(openFileDialog1.FileName).Size);
-                //g.DrawImage(Image.FromFile(openFileDialog1.FileName), r);
                 imagenAbierta = true;
                 ruta = openFileDialog1.FileName;
                 formato = canvas.Image.RawFormat;
@@ -341,7 +330,7 @@ namespace Paint
                 }
                 Text = aux;
                 cambios = false;
-                //openFileDialog1.Dispose();                
+                //imagenAux2.Dispose();               
             }
         }
 
@@ -548,7 +537,12 @@ namespace Paint
             {
                 if (imagenAbierta || ruta.Length != 0)
                 {
-                    //Image aux = canvas.Image;
+                    //using (MemoryStream stream = new MemoryStream())
+                    //{
+                    //    canvas.Image.Save(stream, ImageFormat.Png);
+                    //    //canvas.Image.Dispose();
+                    //    Image.FromStream(stream).Save(ruta, formato);
+                    //}
                     canvas.Image.Save(ruta, formato);
                     cambios = false;
                 }

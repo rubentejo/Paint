@@ -103,5 +103,29 @@
   <ItemGroup>
     <None Include="bin\Debug\circulo.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\lapiz.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\goma.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\brocha.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\relleno.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\linea.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cuadrado.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\triangulo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\circulo.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
