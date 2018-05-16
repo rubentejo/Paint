@@ -24,7 +24,7 @@ namespace Paint
     {
         Graphics g;
         Pen p;
-        bool mouseDown, cambios, imagenAbierta, rellenoActivado;
+        bool mouseDown, cambios, imagenAbierta, rellenoActivado, moving, imagenAuxGuardada;
         string ruta = "";
         ImageFormat formato;
         int tamañoLapiz, tamañoGoma, tamañoBrocha;
@@ -33,8 +33,9 @@ namespace Paint
         int[] tamañosBrocha = { 5, 6, 7, 8, 9, 10 };
         Point inicio, fin;
         Point[] puntosTriangulo = new Point[3];
-        Bitmap bmpAux;
-        Image imagenAux, imagenAux2;
+        Image imagenAux;
+        StreamReader stream;
+        Stream s;
         Rectangle r;
         Herramientas herramienta, relleno;
 
@@ -58,10 +59,11 @@ namespace Paint
             tamañoGoma = 10;
             tamañoBrocha = 5;
             p = new Pen(Color.Black, tamañoLapiz);
-            p.StartCap = System.Drawing.Drawing2D.LineCap.Round;
-            p.EndCap = p.StartCap;
+            //p.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+            //p.EndCap = p.StartCap;
             mouseDown = false;
             cambios = false;
+            moving = false;
             herramienta = Herramientas.Lapiz;
             inicio = new Point();
             fin = new Point();
@@ -311,8 +313,16 @@ namespace Paint
                     }
                 }
 
-                //imagenAux2 = Image.FromFile(openFileDialog1.FileName);
-                canvas.Image = Image.FromFile(openFileDialog1.FileName);
+
+                try
+                {
+                    stream = new StreamReader(openFileDialog1.FileName);
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Ha ocurrido un problema al abrir el archivo. Inténtalo de nuevo o prueba con otro.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+                canvas.Image = Image.FromStream(stream.BaseStream);//Image.FromFile(openFileDialog1.FileName);
                 g = Graphics.FromImage(canvas.Image);
                 canvas.Invalidate();
                 imagenAbierta = true;
@@ -330,6 +340,7 @@ namespace Paint
                 }
                 Text = aux;
                 cambios = false;
+                stream.Dispose();
                 //imagenAux2.Dispose();               
             }
         }
@@ -440,6 +451,15 @@ namespace Paint
             this.Close();
         }
 
+        private void limpiarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (cambios)
+            {
+                g.Clear(Color.White);
+                canvas.Invalidate();
+            }
+        }
+
         /// <summary>
         /// Permite cambiar el tamaño de la herramienta (lápiz, goma o brocha) mediante
         /// la tecla CTRL y +/-.
@@ -537,12 +557,6 @@ namespace Paint
             {
                 if (imagenAbierta || ruta.Length != 0)
                 {
-                    //using (MemoryStream stream = new MemoryStream())
-                    //{
-                    //    canvas.Image.Save(stream, ImageFormat.Png);
-                    //    //canvas.Image.Dispose();
-                    //    Image.FromStream(stream).Save(ruta, formato);
-                    //}
                     canvas.Image.Save(ruta, formato);
                     cambios = false;
                 }
@@ -551,29 +565,6 @@ namespace Paint
                     guardarComoToolStripMenuItem.PerformClick();
                 }
             }
-        }
-
-        /// <summary>
-        /// Lleva a cabo los cambios procedentes en el picturebox cuando se efectúa
-        /// sobre él un click izquierdo del ratón.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void canvas_Click(object sender, EventArgs e)
-        {
-            switch (herramienta)
-            {
-                case Herramientas.Lapiz:
-                    g.FillEllipse(new SolidBrush(colorActual.BackColor), inicio.X, inicio.Y, tamañoLapiz, tamañoLapiz);
-                    break;
-                case Herramientas.Goma:
-                    g.FillRectangle(new SolidBrush(canvas.BackColor), inicio.X, inicio.Y, tamañoGoma, tamañoGoma);
-                    break;
-                case Herramientas.Brocha:
-                    g.FillEllipse(new SolidBrush(colorActual.BackColor), inicio.X, inicio.Y, tamañoBrocha, tamañoBrocha);
-                    break;
-            }
-            canvas.Invalidate();
         }
 
         /// <summary>
@@ -586,6 +577,8 @@ namespace Paint
             if (e.Button == MouseButtons.Left)
             {
                 mouseDown = true;
+                imagenAuxGuardada = false;
+                moving = false;
                 cambios = true;
                 inicio = e.Location;
             }
@@ -601,40 +594,60 @@ namespace Paint
         {
             lblCoordenadas.Text = e.X + ", " + e.Y;
             fin = e.Location;
+            moving = true;
 
             if (mouseDown)
             {
                 switch (herramienta)
                 {
                     case Herramientas.Lapiz:
+                        p.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+                        p.EndCap = p.StartCap;
                         p.Color = colorActual.BackColor;
                         p.Width = tamañoLapiz;
                         g.DrawLine(p, inicio, fin);
                         inicio = fin;
                         break;
                     case Herramientas.Goma:
-                        g.FillRectangle(new SolidBrush(canvas.BackColor), e.X, e.Y, tamañoGoma, tamañoGoma);
+                        p.StartCap = System.Drawing.Drawing2D.LineCap.Square;
+                        p.EndCap = p.StartCap;
+                        p.Color = Color.White;
+                        p.Width = tamañoGoma;
+                        g.DrawLine(p, inicio, fin);
+                        inicio = fin;
+                        //g.FillRectangle(new SolidBrush(canvas.BackColor), e.X, e.Y, tamañoGoma, tamañoGoma);
                         break;
                     case Herramientas.Brocha:
+                        p.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+                        p.EndCap = p.StartCap;
                         p.Color = colorActual.BackColor;
                         p.Width = tamañoBrocha;
                         g.DrawLine(p, inicio, fin);
                         inicio = fin;
                         break;
                     case Herramientas.Linea:
-                        imagenAux = canvas.Image;
-                        g.Clear(Color.White);
-                        //g.DrawImage(imagenAux, canvas.ClientRectangle);
-                        canvas.Image = imagenAux;
-                        g = Graphics.FromImage(canvas.Image);
-                        g.DrawLine(new Pen(colorActual.BackColor, 3), inicio, fin);
-                        break;
-                    case Herramientas.Cuadrado:
-                        imagenAux = canvas.Image;
+                        if (!imagenAuxGuardada)
+                        {
+                            s = new MemoryStream();
+                            canvas.Image.Save(s, ImageFormat.Png);
+                            imagenAux = Image.FromStream(s);
+                            imagenAuxGuardada = true;
+                        }
                         g.Clear(Color.White);
                         g.DrawImage(imagenAux, canvas.ClientRectangle);
-                        canvas.Image = imagenAux;
-                        g = Graphics.FromImage(canvas.Image);
+                        g.DrawLine(new Pen(colorActual.BackColor, 3), inicio, fin);
+                        s.Dispose();
+                        break;
+                    case Herramientas.Cuadrado:
+                        if (!imagenAuxGuardada)
+                        {
+                            s = new MemoryStream();
+                            canvas.Image.Save(s, ImageFormat.Png);
+                            imagenAux = Image.FromStream(s);
+                            imagenAuxGuardada = true;
+                        }
+                        g.Clear(Color.White);
+                        g.DrawImage(imagenAux, canvas.ClientRectangle);
 
                         if (inicio.X - fin.X > 0 && inicio.Y - fin.Y > 0)
                         {
@@ -661,13 +674,18 @@ namespace Paint
                         {
                             g.DrawRectangle(new Pen(colorActual.BackColor, 3), r);
                         }
+                        s.Dispose();
                         break;
                     case Herramientas.Triangulo:
-                        imagenAux = canvas.Image;
+                        if (!imagenAuxGuardada)
+                        {
+                            s = new MemoryStream();
+                            canvas.Image.Save(s, ImageFormat.Png);
+                            imagenAux = Image.FromStream(s);
+                            imagenAuxGuardada = true;
+                        }
                         g.Clear(Color.White);
-                        //g.DrawImage(imagenAux, canvas.ClientRectangle);
-                        canvas.Image = imagenAux;
-                        g = Graphics.FromImage(canvas.Image);
+                        g.DrawImage(imagenAux, canvas.ClientRectangle);
 
                         if (inicio.X - fin.X > 0 && inicio.Y - fin.Y > 0)
                         {
@@ -699,13 +717,18 @@ namespace Paint
                             g.DrawPolygon(new Pen(colorActual.BackColor, 3), puntosTriangulo);
                         }
                         g.DrawRectangle(new Pen(colorActual.BackColor, 3), r);
+                        s.Dispose();
                         break;
                     case Herramientas.Circulo:
-                        imagenAux = canvas.Image;
+                        if (!imagenAuxGuardada)
+                        {
+                            s = new MemoryStream();
+                            canvas.Image.Save(s, ImageFormat.Png);
+                            imagenAux = Image.FromStream(s);
+                            imagenAuxGuardada = true;
+                        }
                         g.Clear(Color.White);
-                        //g.DrawImage(imagenAux, canvas.ClientRectangle);
-                        canvas.Image = imagenAux;
-                        g = Graphics.FromImage(canvas.Image);
+                        g.DrawImage(imagenAux, canvas.ClientRectangle);
 
                         if (inicio.X - fin.X > 0 && inicio.Y - fin.Y > 0)
                         {
@@ -732,6 +755,7 @@ namespace Paint
                         {
                             g.DrawEllipse(new Pen(colorActual.BackColor, 3), r);
                         }
+                        s.Dispose();
                         break;
                 }
             }
@@ -740,7 +764,8 @@ namespace Paint
         }
 
         /// <summary>
-        /// Detecta el fin de la actividad sobre el picturebox.
+        /// Detecta el fin de la actividad sobre el picturebox. Ademas efectúa los cambios procedentes sobre el picturebox
+        /// si se detecta un click sin movimiento sobre él.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -749,8 +774,24 @@ namespace Paint
             if (e.Button == MouseButtons.Left)
             {
                 mouseDown = false;
-                if (imagenAux != null) g.DrawImage(imagenAux, canvas.ClientRectangle);
-                canvas.Invalidate();
+                imagenAuxGuardada = false;
+                if (!moving)
+                {
+                    switch (herramienta)
+                    {
+                        case Herramientas.Lapiz:
+                            g.FillEllipse(new SolidBrush(colorActual.BackColor), inicio.X, inicio.Y, tamañoLapiz, tamañoLapiz);
+                            break;
+                        case Herramientas.Goma:
+                            g.FillRectangle(new SolidBrush(canvas.BackColor), inicio.X, inicio.Y, tamañoGoma, tamañoGoma);
+                            break;
+                        case Herramientas.Brocha:
+                            g.FillEllipse(new SolidBrush(colorActual.BackColor), inicio.X, inicio.Y, tamañoBrocha, tamañoBrocha);
+                            break;
+                    }
+                    canvas.Invalidate();
+                }
+                moving = false;
             }
         }
     }
