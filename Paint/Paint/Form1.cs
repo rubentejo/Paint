@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -37,7 +38,10 @@ namespace Paint
         StreamReader stream;
         Stream s;
         Rectangle r;
-        Herramientas herramienta, relleno;
+        Herramientas herramienta;
+        LinearGradientBrush gradiente;
+        LinearGradientMode modoGradiente;
+        Form2 f;
 
         public Form1()
         {
@@ -67,6 +71,7 @@ namespace Paint
             herramienta = Herramientas.Lapiz;
             inicio = new Point();
             fin = new Point();
+            modoGradiente = LinearGradientMode.Horizontal;
 
             cboTamaños.DataSource = tamañosLapiz;
             cboTamaños.SelectedIndex = 0;
@@ -121,8 +126,19 @@ namespace Paint
         /// <param name="e"></param>
         private void colores_Click(object sender, EventArgs e)
         {
-            colorActual.BackColor = ((Button)sender).BackColor;
-            p.Color = colorActual.BackColor;
+            if ((Button)sender == colorActual)
+            {
+                if (colorDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    colorActual.BackColor = colorDialog1.Color;
+                }
+            }
+            else
+            {
+                colorActual.BackColor = ((Button)sender).BackColor;
+                p.Color = colorActual.BackColor;
+            }
+
         }
 
         /// <summary>
@@ -157,7 +173,10 @@ namespace Paint
             if ((Button)sender == btnLapiz)
             {
                 rellenoActivado = false;
-                grbTamaños.Enabled = true;
+                cboTamaños.Enabled = true;
+                chkGradiente.Enabled = false;
+                btnConfigGradiente.Enabled = false;
+                toolTip1.SetToolTip(cboTamaños, "Tamaño del lapiz");
                 g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
                 herramienta = Herramientas.Lapiz;
                 lblTamaños.Text = "Tamaño del lápiz:";
@@ -172,11 +191,15 @@ namespace Paint
                     cboTamaños.SelectedIndex = 0;
                     tamañoLapiz = (int)cboTamaños.SelectedItem;
                 }
+                if (f != null) f.Hide();
             }
             else if ((Button)sender == btnGoma)
             {
                 rellenoActivado = false;
-                grbTamaños.Enabled = true;
+                cboTamaños.Enabled = true;
+                chkGradiente.Enabled = false;
+                btnConfigGradiente.Enabled = false;
+                toolTip1.SetToolTip(cboTamaños, "Tamaño de la goma");
                 herramienta = Herramientas.Goma;
                 lblTamaños.Text = "Tamaño de la goma:";
                 cboTamaños.DataSource = tamañosGoma;
@@ -190,11 +213,15 @@ namespace Paint
                     cboTamaños.SelectedIndex = 0;
                     tamañoGoma = (int)cboTamaños.SelectedItem;
                 }
+                if (f != null) f.Hide();
             }
             else if ((Button)sender == btnBrocha)
             {
                 rellenoActivado = false;
-                grbTamaños.Enabled = true;
+                cboTamaños.Enabled = true;
+                chkGradiente.Enabled = false;
+                btnConfigGradiente.Enabled = false;
+                toolTip1.SetToolTip(cboTamaños, "Tamaño de la brocha");
                 g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 herramienta = Herramientas.Brocha;
                 lblTamaños.Text = "Tamaño de la brocha:";
@@ -209,46 +236,35 @@ namespace Paint
                     cboTamaños.SelectedIndex = 0;
                     tamañoBrocha = (int)cboTamaños.SelectedItem;
                 }
+                if (f != null) f.Hide();
             }
             else if ((Button)sender == btnRelleno)
             {
                 rellenoActivado = true;
-                relleno = Herramientas.Cuadrado;
                 herramienta = Herramientas.Cuadrado;
-                grbTamaños.Enabled = false;
+                cboTamaños.Enabled = false;
+                chkGradiente.Enabled = true;
             }
             else if ((Button)sender == btnLinea)
             {
                 rellenoActivado = false;
                 herramienta = Herramientas.Linea;
-                grbTamaños.Enabled = false;
+                cboTamaños.Enabled = false;
             }
             else if ((Button)sender == btnCuadrado)
             {
-                if (rellenoActivado)
-                {
-                    relleno = Herramientas.Cuadrado;
-                }
                 herramienta = Herramientas.Cuadrado;
-                grbTamaños.Enabled = false;
+                cboTamaños.Enabled = false;
             }
             else if ((Button)sender == btnTriangulo)
             {
-                if (rellenoActivado)
-                {
-                    relleno = Herramientas.Triangulo;
-                }
                 herramienta = Herramientas.Triangulo;
-                grbTamaños.Enabled = false;
+                cboTamaños.Enabled = false;
             }
             else if ((Button)sender == btnCirculo)
             {
-                if (rellenoActivado)
-                {
-                    relleno = Herramientas.Circulo;
-                }
                 herramienta = Herramientas.Circulo;
-                grbTamaños.Enabled = false;
+                cboTamaños.Enabled = false;
             }
         }
 
@@ -270,9 +286,7 @@ namespace Paint
                         goto case DialogResult.No;
                     case DialogResult.No:
                         Text = "Sin título";
-                        canvas.Image = new Bitmap(canvas.Width, canvas.Height);
-                        g = Graphics.FromImage(canvas.Image);
-                        g.FillRectangle(Brushes.White, canvas.ClientRectangle);
+                        g.Clear(Color.White);
                         cambios = false;
                         imagenAbierta = false;
                         ruta = "";
@@ -285,9 +299,7 @@ namespace Paint
             else
             {
                 Text = "Sin título";
-                canvas.Image = new Bitmap(canvas.Width, canvas.Height);
-                g = Graphics.FromImage(canvas.Image);
-                g.FillRectangle(Brushes.White, canvas.ClientRectangle);
+                g.Clear(Color.White);
                 cambios = false;
                 imagenAbierta = false;
                 ruta = "";
@@ -313,7 +325,6 @@ namespace Paint
                     }
                 }
 
-
                 try
                 {
                     stream = new StreamReader(openFileDialog1.FileName);
@@ -322,7 +333,7 @@ namespace Paint
                 {
                     MessageBox.Show("Ha ocurrido un problema al abrir el archivo. Inténtalo de nuevo o prueba con otro.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
-                canvas.Image = Image.FromStream(stream.BaseStream);//Image.FromFile(openFileDialog1.FileName);
+                canvas.Image = Image.FromStream(stream.BaseStream);
                 g = Graphics.FromImage(canvas.Image);
                 canvas.Invalidate();
                 imagenAbierta = true;
@@ -340,8 +351,7 @@ namespace Paint
                 }
                 Text = aux;
                 cambios = false;
-                stream.Dispose();
-                //imagenAux2.Dispose();               
+                stream.Dispose();            
             }
         }
 
@@ -419,6 +429,81 @@ namespace Paint
         }
 
         /// <summary>
+        /// Lanza un formulario modal para configurar el gradiente del relleno.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnConfigGradiente_Click(object sender, EventArgs e)
+        {
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                if (f.rbHorizontal.Checked)
+                {
+                    modoGradiente = LinearGradientMode.Horizontal;
+                }
+                else if (f.rbVertical.Checked)
+                {
+                    modoGradiente = LinearGradientMode.Vertical;
+                }
+                else if (f.rbDAscendente.Checked)
+                {
+                    modoGradiente = LinearGradientMode.BackwardDiagonal;
+                }
+                else if (f.rbDDescendente.Checked)
+                {
+                    modoGradiente = LinearGradientMode.ForwardDiagonal;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Activa/desactiva la opción de gradiente del relleno. Al activarse lanza un formulario modal 
+        /// para configurar dicho gradiente.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chkGradiente_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkGradiente.Checked)
+            {
+                btnConfigGradiente.Enabled = true;
+                toolTip1.SetToolTip(chkGradiente, "Gradiente activado");
+
+                if (f == null)
+                {
+                    f = new Form2();
+                    f.btnColor1.BackColor = colorActual.BackColor;
+                    f.btnColor2.BackColor = colorActual.BackColor;
+                }
+
+                if(f.ShowDialog() == DialogResult.OK)
+                {
+                    if (f.rbHorizontal.Checked)
+                    {
+                        modoGradiente = LinearGradientMode.Horizontal;
+                    }
+                    else if (f.rbVertical.Checked)
+                    {
+                        modoGradiente = LinearGradientMode.Vertical;
+                    }
+                    else if (f.rbDAscendente.Checked)
+                    {
+                        modoGradiente = LinearGradientMode.BackwardDiagonal;
+                    }
+                    else if (f.rbDDescendente.Checked)
+                    {
+                        modoGradiente = LinearGradientMode.ForwardDiagonal;
+                    }
+                }
+            }
+            else
+            {
+                btnConfigGradiente.Enabled = false;
+                toolTip1.SetToolTip(chkGradiente, "Gradiente desactivado");
+            }
+        }
+
+        /// <summary>
         /// Antes de cerrar la aplicación se pregunta si se desean guardar los cambios.
         /// </summary>
         /// <param name="sender"></param>
@@ -449,15 +534,6 @@ namespace Paint
         private void salirToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void limpiarToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (cambios)
-            {
-                g.Clear(Color.White);
-                canvas.Invalidate();
-            }
         }
 
         /// <summary>
@@ -668,7 +744,26 @@ namespace Paint
 
                         if (rellenoActivado)
                         {
-                            g.FillRectangle(new SolidBrush(colorActual.BackColor), r);
+                            if (chkGradiente.Checked)
+                            {
+                                try
+                                {
+                                    gradiente = new LinearGradientBrush(r, f.btnColor1.BackColor, f.btnColor2.BackColor, modoGradiente);
+                                }
+                                catch (ArgumentException) { }
+                                try
+                                {
+                                    g.FillRectangle(gradiente, r);
+                                }
+                                catch (ArgumentNullException)
+                                {
+                                    g.FillRectangle(new SolidBrush(colorActual.BackColor), r);
+                                }
+                            }
+                            else
+                            {
+                                g.FillRectangle(new SolidBrush(colorActual.BackColor), r);
+                            }
                         }
                         else
                         {
@@ -704,19 +799,37 @@ namespace Paint
                             r = new Rectangle(inicio, new Size(Math.Abs(inicio.X - fin.X), Math.Abs(inicio.Y - fin.Y)));
                         }
 
-                        puntosTriangulo[0] = new Point(r.Right / 2, r.Top);
+                        puntosTriangulo[0] = new Point(r.Right - r.Width / 2, r.Top);
                         puntosTriangulo[1] = new Point(r.Right, r.Bottom);
                         puntosTriangulo[2] = new Point(r.Left, r.Bottom);
 
                         if (rellenoActivado)
                         {
-                            g.FillPolygon(new SolidBrush(colorActual.BackColor), puntosTriangulo);
+                            if (chkGradiente.Checked)
+                            {
+                                try
+                                {
+                                    gradiente = new LinearGradientBrush(r, f.btnColor1.BackColor, f.btnColor2.BackColor, modoGradiente);
+                                }
+                                catch (ArgumentException) { }
+                                try
+                                {
+                                    g.FillPolygon(gradiente, puntosTriangulo);
+                                }
+                                catch (ArgumentNullException)
+                                {
+                                    g.FillPolygon(new SolidBrush(colorActual.BackColor), puntosTriangulo);
+                                }
+                            }
+                            else
+                            {
+                                g.FillPolygon(new SolidBrush(colorActual.BackColor), puntosTriangulo);
+                            }
                         }
                         else
                         {
                             g.DrawPolygon(new Pen(colorActual.BackColor, 3), puntosTriangulo);
                         }
-                        g.DrawRectangle(new Pen(colorActual.BackColor, 3), r);
                         s.Dispose();
                         break;
                     case Herramientas.Circulo:
@@ -749,7 +862,26 @@ namespace Paint
 
                         if (rellenoActivado)
                         {
-                            g.FillEllipse(new SolidBrush(colorActual.BackColor), r);
+                            if (chkGradiente.Checked)
+                            {
+                                try
+                                {
+                                    gradiente = new LinearGradientBrush(r, f.btnColor1.BackColor, f.btnColor2.BackColor, modoGradiente);
+                                }
+                                catch (ArgumentException) { }
+                                try
+                                {
+                                    g.FillEllipse(gradiente, r);
+                                }
+                                catch (ArgumentNullException)
+                                {
+                                    g.FillEllipse(new SolidBrush(colorActual.BackColor), r);
+                                }
+                            }
+                            else
+                            {
+                                g.FillEllipse(new SolidBrush(colorActual.BackColor), r);
+                            }
                         }
                         else
                         {
@@ -780,13 +912,13 @@ namespace Paint
                     switch (herramienta)
                     {
                         case Herramientas.Lapiz:
-                            g.FillEllipse(new SolidBrush(colorActual.BackColor), inicio.X, inicio.Y, tamañoLapiz, tamañoLapiz);
+                            g.FillEllipse(new SolidBrush(colorActual.BackColor), inicio.X - tamañoLapiz / 2, inicio.Y - tamañoLapiz / 2, tamañoLapiz, tamañoLapiz);
                             break;
                         case Herramientas.Goma:
-                            g.FillRectangle(new SolidBrush(canvas.BackColor), inicio.X, inicio.Y, tamañoGoma, tamañoGoma);
+                            g.FillRectangle(new SolidBrush(canvas.BackColor), inicio.X - tamañoGoma / 2, inicio.Y - tamañoGoma / 2, tamañoGoma, tamañoGoma);
                             break;
                         case Herramientas.Brocha:
-                            g.FillEllipse(new SolidBrush(colorActual.BackColor), inicio.X, inicio.Y, tamañoBrocha, tamañoBrocha);
+                            g.FillEllipse(new SolidBrush(colorActual.BackColor), inicio.X - tamañoBrocha / 2, inicio.Y - tamañoBrocha / 2, tamañoBrocha, tamañoBrocha);
                             break;
                     }
                     canvas.Invalidate();

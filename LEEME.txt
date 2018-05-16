@@ -18,5 +18,7 @@
 	· Añadí 3 nuevos tipos de figura, pero sigo teniendo el mismo problema que ayer.
 	· Coordenadas del raton sobre el lienzo.
 	· Funcionalidad de relleno (algo diferente a la del paint original).
-	· Corregí el problema a la hora de guardar imágenes abiertas.
 	· Arreglé lo del redimensionado el picturebox con imágenes de diferentes tamaños.
+16/05/2018
+	· Corregidos (definitivamente) los problemas a la hora de guardar imágenes.
+	· Corregido el problema a la hora de dibujar figuras.
