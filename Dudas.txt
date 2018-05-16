@@ -1,4 +1,0 @@
-Dentro del VS, algunos archivos del proyecto tienen un candado (protegido) referente al Git, no se por qué motivo (a que se refiere ese candado).
-No se por qué los resources no se pasan al Git. Esto tiene relacion con lo anterior.
-Dibujado de figuras (creo que debería hacerlo bien pero no lo hace).
-El triangulo está loco.

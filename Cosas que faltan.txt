@@ -1,6 +1,0 @@
-figuras****
-rellenar (?). si no usar fillregion
-PROBLEMAS A LA HORA DE GUARDAR IOEXCEPTION(cuando trato de borrar la imagen ya existente) Y System.Runtime.InteropServices.ExternalException: 'Error genérico en GDI+.' (cuando hago el .save)***
-
-	---->>>> Cuando se cambie el tamaño de la ventana, (IDEA) hay que guardar la imagen del canvas actual, crear una nueva, y luego dibujar la antigua sobre
-				la nueva imagen del canvas. El problema vendría cuando el tamaño del nuevo canvas es menor al anterior.

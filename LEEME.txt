@@ -22,3 +22,5 @@
 16/05/2018
 	· Corregidos (definitivamente) los problemas a la hora de guardar imágenes.
 	· Corregido el problema a la hora de dibujar figuras.
+	· Corregidos problemas varios.
+	· Nueva funcionalidad de gradiente para el relleno.
