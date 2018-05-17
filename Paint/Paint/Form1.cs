@@ -209,12 +209,12 @@ namespace Paint
                 cboTamaños.Enabled = true;
                 chkGradiente.Enabled = false;
                 btnConfigGradiente.Enabled = false;
+                btnRelleno.BackColor = Color.Transparent;
                 toolTip1.SetToolTip(cboTamaños, "Tamaño del lapiz");
                 g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
                 herramienta = Herramientas.Lapiz;
                 lblTamaños.Text = "Tamaño del lápiz:";
                 cboTamaños.DataSource = tamañosLapiz;
-                cboTamaños.Width = lblTamaños.Width - 3;
                 if (buscaCombo(cboTamaños, tamañoLapiz) > -1)
                 {
                     cboTamaños.SelectedIndex = buscaCombo(cboTamaños, tamañoLapiz);
@@ -231,11 +231,11 @@ namespace Paint
                 cboTamaños.Enabled = true;
                 chkGradiente.Enabled = false;
                 btnConfigGradiente.Enabled = false;
+                btnRelleno.BackColor = Color.Transparent;
                 toolTip1.SetToolTip(cboTamaños, "Tamaño de la goma");
                 herramienta = Herramientas.Goma;
                 lblTamaños.Text = "Tamaño de la goma:";
                 cboTamaños.DataSource = tamañosGoma;
-                cboTamaños.Width = lblTamaños.Width - 3;
                 if (buscaCombo(cboTamaños, tamañoGoma) > -1)
                 {
                     cboTamaños.SelectedIndex = buscaCombo(cboTamaños, tamañoGoma);
@@ -252,12 +252,12 @@ namespace Paint
                 cboTamaños.Enabled = true;
                 chkGradiente.Enabled = false;
                 btnConfigGradiente.Enabled = false;
+                btnRelleno.BackColor = Color.Transparent;
                 toolTip1.SetToolTip(cboTamaños, "Tamaño de la brocha");
                 g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 herramienta = Herramientas.Brocha;
                 lblTamaños.Text = "Tamaño de la brocha:";
                 cboTamaños.DataSource = tamañosBrocha;
-                cboTamaños.Width = lblTamaños.Width - 3;
                 if (buscaCombo(cboTamaños, tamañoBrocha) > -1)
                 {
                     cboTamaños.SelectedIndex = buscaCombo(cboTamaños, tamañoBrocha);
@@ -274,6 +274,7 @@ namespace Paint
                 herramienta = Herramientas.Cuadrado;
                 cboTamaños.Enabled = false;
                 chkGradiente.Enabled = true;
+                btnRelleno.BackColor = System.Drawing.SystemColors.ActiveBorder;
             }
             else if ((Button)sender == btnLinea)
             {
@@ -539,6 +540,7 @@ namespace Paint
             if (chkDesaturar.Checked)
             {
                 desaturar = true;
+                toolTip1.SetToolTip(chkDesaturar, "Desaturado activado");
                 sDesaturar = new MemoryStream();
                 if (formato != null)
                 {
@@ -556,6 +558,7 @@ namespace Paint
             }
             else
             {
+                toolTip1.SetToolTip(chkDesaturar, "Desaturado desactivado");
                 if (imgauxDesaturar != null && desaturar)
                 {
                     g.Clear(Color.White);
