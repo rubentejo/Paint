@@ -24,3 +24,7 @@
 	· Corregido el problema a la hora de dibujar figuras.
 	· Corregidos problemas varios.
 	· Nueva funcionalidad de gradiente para el relleno.
+17/05/2018
+	· Corregidos errores varios.
+	· Añadida funcionalidad de desaturado.
+	· Añadida funcionalida de Ctlr+Z.

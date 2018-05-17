@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Paint
@@ -23,25 +19,41 @@ namespace Paint
 
     public partial class Form1 : Form
     {
-        Graphics g;
-        Pen p;
-        bool mouseDown, cambios, imagenAbierta, rellenoActivado, moving, imagenAuxGuardada;
-        string ruta = "";
-        ImageFormat formato;
-        int tamañoLapiz, tamañoGoma, tamañoBrocha;
-        int[] tamañosLapiz = { 1, 2, 3, 4, 5 };
-        int[] tamañosGoma = { 10, 15, 20, 25, 30 };
-        int[] tamañosBrocha = { 5, 6, 7, 8, 9, 10 };
-        Point inicio, fin;
-        Point[] puntosTriangulo = new Point[3];
-        Image imagenAux;
-        StreamReader stream;
-        Stream s;
-        Rectangle r;
-        Herramientas herramienta;
-        LinearGradientBrush gradiente;
-        LinearGradientMode modoGradiente;
-        Form2 f;
+        Graphics g;                                         //Componente Graphics del picturebox
+        Pen p;                                              //Herramienta pen empleada para dibujar
+        bool mouseDown;                                     //Indica si el ratón está pulsado
+        bool cambios;                                       //Indica si se han realizado cambios
+        bool imagenAbierta;                                 //Indica si se ha abierto una imagen
+        bool rellenoActivado;                               //Indica si la herramienta de relleno está activada
+        bool moving;                                        //Indica si el raton se está moviendo
+        bool imagenAuxGuardada;                             //Indica (a la hora de dibujar figuras) si se ha guardado la imagen previa
+        bool desaturar;                                     //Indica si la aplicación debe desaturar
+        string ruta;                                        //Ruta de la imagen abierta
+        ImageFormat formato;                                //Formato de la imagen abierta
+        int tamañoLapiz;                                    //Tamaño de la herramienta lápiz
+        int tamañoGoma;                                     //Tamaño de la herramienta goma
+        int tamañoBrocha;                                   //Tamaño de la herramienta brocha
+        int[] tamañosLapiz = { 1, 2, 3, 4, 5 };             //Array de tamaños que puede tomar el lápiz
+        int[] tamañosGoma = { 10, 15, 20, 25, 30 };         //Array de tamaños que puede tomar la goma
+        int[] tamañosBrocha = { 5, 6, 7, 8, 9, 10 };        //Array de tamaños que puede tomar la brocha
+        Point inicio;                                       //Punto inicial de dibujado
+        Point fin;                                          //Punto final de dibujado
+        Point[] puntosTriangulo = new Point[3];             //Puntos del triangulo (cuando se dibujan triángulos)
+        Image imgauxMouseMove;                              //Variable auxiliar que guarda la imagen previo dibujado de figuras
+        Image imgauxDesaturar;                              //Variable auxiliar que guarda la imagen previo desaturado
+        StreamReader stream;                                //Variable auxiliar necesaria para abrir imágenes
+        Stream s;                                           //Variable auxiliar para el guardado de imágenes previas
+        Stream sDesaturar;                                  //Variable auxiliar que ayuda al guardado de la imagen previo desaturado
+        Rectangle r;                                        //Variable auxiliar para el dibujado de figuras
+        Herramientas herramienta;                           //Herramienta de trabajo
+        LinearGradientBrush gradiente;                      //Variable auxiliar que guarda el gradiente del relleno
+        LinearGradientMode modoGradiente;                   //Variable auxiliar que guarda el modo del gradiente del relleno
+        Form2 f;                                            //Formluario secundario de configuración del gradiente
+        List<Stream> controlCambios = new List<Stream>();   //Lista de streams que sirve para simular la funcionalidad del Ctrl+Z
+
+        ColorMatrix clrMatrix;                              //Matriz de color de desaturado
+        ImageAttributes imgAttributes;                      //Variable auxiliar que guarda la matriz de color de desaturado
+        
 
         public Form1()
         {
@@ -58,13 +70,12 @@ namespace Paint
             // Inicializamos componentes
 
             Text = "Sin título";
+            ruta = "";
             g = canvas.CreateGraphics();
             tamañoLapiz = 1;
             tamañoGoma = 10;
             tamañoBrocha = 5;
             p = new Pen(Color.Black, tamañoLapiz);
-            //p.StartCap = System.Drawing.Drawing2D.LineCap.Round;
-            //p.EndCap = p.StartCap;
             mouseDown = false;
             cambios = false;
             moving = false;
@@ -79,6 +90,28 @@ namespace Paint
             canvas.Image = new Bitmap(canvas.Width, canvas.Height);
             g = Graphics.FromImage(canvas.Image);
             g.FillRectangle(Brushes.White, canvas.ClientRectangle);
+
+            s = new MemoryStream();
+            canvas.Image.Save(s, ImageFormat.Png);
+            controlCambios.Add(s);
+
+            //Inicializamos los componentes de la matriz de desaturado
+
+            clrMatrix = new ColorMatrix();
+            clrMatrix.Matrix00 = 0.11f;
+            clrMatrix.Matrix01 = 0.11f;
+            clrMatrix.Matrix02 = 0.11f;
+            clrMatrix.Matrix10 = 0.59f;
+            clrMatrix.Matrix11 = 0.59f;
+            clrMatrix.Matrix12 = 0.59f;
+            clrMatrix.Matrix20 = 0.3f;
+            clrMatrix.Matrix21 = 0.3f;
+            clrMatrix.Matrix22 = 0.3f;
+            clrMatrix.Matrix33 = 1.0f;
+            clrMatrix.Matrix44 = 1.0f;
+
+            imgAttributes = new ImageAttributes();
+            imgAttributes.SetColorMatrix(clrMatrix);
         }
 
         /// <summary>
@@ -191,7 +224,6 @@ namespace Paint
                     cboTamaños.SelectedIndex = 0;
                     tamañoLapiz = (int)cboTamaños.SelectedItem;
                 }
-                if (f != null) f.Hide();
             }
             else if ((Button)sender == btnGoma)
             {
@@ -213,7 +245,6 @@ namespace Paint
                     cboTamaños.SelectedIndex = 0;
                     tamañoGoma = (int)cboTamaños.SelectedItem;
                 }
-                if (f != null) f.Hide();
             }
             else if ((Button)sender == btnBrocha)
             {
@@ -236,7 +267,6 @@ namespace Paint
                     cboTamaños.SelectedIndex = 0;
                     tamañoBrocha = (int)cboTamaños.SelectedItem;
                 }
-                if (f != null) f.Hide();
             }
             else if ((Button)sender == btnRelleno)
             {
@@ -303,11 +333,13 @@ namespace Paint
                 cambios = false;
                 imagenAbierta = false;
                 ruta = "";
+                canvas.Invalidate();
             }
         }
 
         /// <summary>
-        /// Abre una imagen sobre el picturebox.
+        /// Abre una imagen. Si se hubieran realizado cambios previamente, se da la 
+        /// opción de guardarlos.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -328,30 +360,31 @@ namespace Paint
                 try
                 {
                     stream = new StreamReader(openFileDialog1.FileName);
+                    canvas.Image = Image.FromStream(stream.BaseStream);
+                    g = Graphics.FromImage(canvas.Image);
+                    canvas.Invalidate();
+                    imagenAbierta = true;
+                    ruta = openFileDialog1.FileName;
+                    formato = canvas.Image.RawFormat;
+                    FileInfo f = new FileInfo(ruta);
+                    string aux = "";
+                    for (int i = 0; i < f.Name.Length; i++)
+                    {
+                        if (f.Name[i] != '.')
+                        {
+                            aux += f.Name[i];
+                        }
+                        else break;
+                    }
+                    Text = aux;
+                    cambios = false;
                 }
                 catch (IOException)
                 {
                     MessageBox.Show("Ha ocurrido un problema al abrir el archivo. Inténtalo de nuevo o prueba con otro.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
-                canvas.Image = Image.FromStream(stream.BaseStream);
-                g = Graphics.FromImage(canvas.Image);
-                canvas.Invalidate();
-                imagenAbierta = true;
-                ruta = openFileDialog1.FileName;
-                formato = canvas.Image.RawFormat;
-                FileInfo f = new FileInfo(ruta);
-                string aux = "";
-                for (int i = 0; i < f.Name.Length; i++)
-                {
-                    if (f.Name[i] != '.')
-                    {
-                        aux += f.Name[i];
-                    }
-                    else break;
-                }
-                Text = aux;
-                cambios = false;
-                stream.Dispose();            
+                
+                stream.Dispose();
             }
         }
 
@@ -375,16 +408,12 @@ namespace Paint
             {
                 saveFileDialog1.FilterIndex = 3;
             }
-            else if (formato == ImageFormat.Gif)
-            {
-                saveFileDialog1.FilterIndex = 4;
-            }
             else
             {
                 saveFileDialog1.FilterIndex = 0;
             }
-            DialogResult dr = saveFileDialog1.ShowDialog();
-            if (dr == DialogResult.OK && saveFileDialog1.FileName != null)
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK && saveFileDialog1.FileName != null)
             {
                 canvas.Image.Save(saveFileDialog1.FileName);
                 ruta = saveFileDialog1.FileName;
@@ -410,9 +439,6 @@ namespace Paint
                         break;
                     case 3:
                         formato = ImageFormat.Bmp;
-                        break;
-                    case 4:
-                        formato = ImageFormat.Gif;
                         break;
                 }
             }
@@ -476,7 +502,7 @@ namespace Paint
                     f.btnColor2.BackColor = colorActual.BackColor;
                 }
 
-                if(f.ShowDialog() == DialogResult.OK)
+                if (f.ShowDialog() == DialogResult.OK)
                 {
                     if (f.rbHorizontal.Checked)
                     {
@@ -501,6 +527,42 @@ namespace Paint
                 btnConfigGradiente.Enabled = false;
                 toolTip1.SetToolTip(chkGradiente, "Gradiente desactivado");
             }
+        }
+
+        /// <summary>
+        /// Activa/desactiva el saturado de la imagen.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chkDesaturar_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkDesaturar.Checked)
+            {
+                desaturar = true;
+                sDesaturar = new MemoryStream();
+                if (formato != null)
+                {
+                    canvas.Image.Save(sDesaturar, formato);
+                }
+                else
+                {
+                    canvas.Image.Save(sDesaturar, ImageFormat.Png);
+                }
+                imgauxDesaturar = Image.FromStream(sDesaturar);
+
+                g.Clear(Color.White);
+                g.DrawImage(imgauxDesaturar, canvas.ClientRectangle, 0, 0, canvas.Image.Width, canvas.Image.Height, GraphicsUnit.Pixel, imgAttributes);
+                sDesaturar.Dispose();
+            }
+            else
+            {
+                if (imgauxDesaturar != null && desaturar)
+                {
+                    g.Clear(Color.White);
+                    g.DrawImage(imgauxDesaturar, canvas.ClientRectangle);
+                }
+            }
+            canvas.Invalidate();
         }
 
         /// <summary>
@@ -609,6 +671,25 @@ namespace Paint
                             break;
                     }
                 }
+                else if (e.KeyCode == Keys.Z)
+                {
+                    if (controlCambios.Count > 0)
+                    {
+                        if (controlCambios.Count > 1)
+                        {
+                            controlCambios.RemoveAt(controlCambios.Count - 1);
+                        }
+                        else
+                        {
+                            if (!imagenAbierta) cambios = false;
+                            else cambios = true;
+                        }
+                        g.Clear(Color.White);
+                        g.DrawImage(Image.FromStream(controlCambios.ElementAt(controlCambios.Count - 1)), canvas.ClientRectangle);
+                        
+                        canvas.Invalidate();
+                    }
+                }
             }
         }
 
@@ -650,6 +731,8 @@ namespace Paint
         /// <param name="e"></param>
         private void canvas_MouseDown(object sender, MouseEventArgs e)
         {
+            desaturar = false;
+            chkDesaturar.Checked = false;
             if (e.Button == MouseButtons.Left)
             {
                 mouseDown = true;
@@ -706,11 +789,11 @@ namespace Paint
                         {
                             s = new MemoryStream();
                             canvas.Image.Save(s, ImageFormat.Png);
-                            imagenAux = Image.FromStream(s);
+                            imgauxMouseMove = Image.FromStream(s);
                             imagenAuxGuardada = true;
                         }
                         g.Clear(Color.White);
-                        g.DrawImage(imagenAux, canvas.ClientRectangle);
+                        g.DrawImage(imgauxMouseMove, canvas.ClientRectangle);
                         g.DrawLine(new Pen(colorActual.BackColor, 3), inicio, fin);
                         s.Dispose();
                         break;
@@ -719,11 +802,11 @@ namespace Paint
                         {
                             s = new MemoryStream();
                             canvas.Image.Save(s, ImageFormat.Png);
-                            imagenAux = Image.FromStream(s);
+                            imgauxMouseMove = Image.FromStream(s);
                             imagenAuxGuardada = true;
                         }
                         g.Clear(Color.White);
-                        g.DrawImage(imagenAux, canvas.ClientRectangle);
+                        g.DrawImage(imgauxMouseMove, canvas.ClientRectangle);
 
                         if (inicio.X - fin.X > 0 && inicio.Y - fin.Y > 0)
                         {
@@ -776,11 +859,11 @@ namespace Paint
                         {
                             s = new MemoryStream();
                             canvas.Image.Save(s, ImageFormat.Png);
-                            imagenAux = Image.FromStream(s);
+                            imgauxMouseMove = Image.FromStream(s);
                             imagenAuxGuardada = true;
                         }
                         g.Clear(Color.White);
-                        g.DrawImage(imagenAux, canvas.ClientRectangle);
+                        g.DrawImage(imgauxMouseMove, canvas.ClientRectangle);
 
                         if (inicio.X - fin.X > 0 && inicio.Y - fin.Y > 0)
                         {
@@ -837,11 +920,11 @@ namespace Paint
                         {
                             s = new MemoryStream();
                             canvas.Image.Save(s, ImageFormat.Png);
-                            imagenAux = Image.FromStream(s);
+                            imgauxMouseMove = Image.FromStream(s);
                             imagenAuxGuardada = true;
                         }
                         g.Clear(Color.White);
-                        g.DrawImage(imagenAux, canvas.ClientRectangle);
+                        g.DrawImage(imgauxMouseMove, canvas.ClientRectangle);
 
                         if (inicio.X - fin.X > 0 && inicio.Y - fin.Y > 0)
                         {
@@ -924,6 +1007,17 @@ namespace Paint
                     canvas.Invalidate();
                 }
                 moving = false;
+
+                s = new MemoryStream();
+                if (formato != null)
+                {
+                    canvas.Image.Save(s, formato);
+                }
+                else
+                {
+                    canvas.Image.Save(s, ImageFormat.Png);
+                }
+                controlCambios.Add(s);
             }
         }
     }

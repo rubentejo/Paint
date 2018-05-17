@@ -12,8 +12,9 @@ namespace Paint
 {
     public partial class Form2 : Form
     {
-        Color color1, color2;
-        int rbChecked;
+        Color color1;   //Color 1 del gradiente
+        Color color2;   //Color 2 del gradiente
+        int rbChecked;  //Opción de dirección de gradiente
 
         public Form2()
         {
@@ -42,17 +43,22 @@ namespace Paint
             }
         }
 
+        /// <summary>
+        /// Reasigna a los botones los colores previamente seleccionados.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnCancelar_Click(object sender, EventArgs e)
         {
             btnColor1.BackColor = color1;
             btnColor2.BackColor = color2;
         }
 
-        //private void CheckedChanged(object sender, EventArgs e)
-        //{
-        //    rbChecked = Convert.ToInt32(((RadioButton)sender).Tag);
-        //}
-
+        /// <summary>
+        /// Guarda en una variable la opción de dirección de gradiente seleccionada.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnAceptar_Click(object sender, EventArgs e)
         {
             if (rbHorizontal.Checked)
@@ -73,6 +79,11 @@ namespace Paint
             }
         }
 
+        /// <summary>
+        /// Asigna el color elegido en el colorDialog al botón correspondiente.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void colores_Click(object sender, EventArgs e)
         {
             if (colorDialog1.ShowDialog() == DialogResult.OK)

@@ -42,7 +42,13 @@
             this.salirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.grbFiguras = new System.Windows.Forms.GroupBox();
+            this.btnCirculo = new System.Windows.Forms.Button();
+            this.btnTriangulo = new System.Windows.Forms.Button();
+            this.btnCuadrado = new System.Windows.Forms.Button();
+            this.btnLinea = new System.Windows.Forms.Button();
             this.grbUtilidades = new System.Windows.Forms.GroupBox();
+            this.chkDesaturar = new System.Windows.Forms.CheckBox();
+            this.btnConfigGradiente = new System.Windows.Forms.Button();
             this.chkGradiente = new System.Windows.Forms.CheckBox();
             this.lblTamaños = new System.Windows.Forms.Label();
             this.cboTamaños = new System.Windows.Forms.ComboBox();
@@ -69,23 +75,18 @@
             this.btnRojoOcuro = new System.Windows.Forms.Button();
             this.btnGris = new System.Windows.Forms.Button();
             this.grbHerramientas = new System.Windows.Forms.GroupBox();
+            this.btnRelleno = new System.Windows.Forms.Button();
+            this.btnBrocha = new System.Windows.Forms.Button();
+            this.btnGoma = new System.Windows.Forms.Button();
+            this.btnLapiz = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.panel3 = new System.Windows.Forms.Panel();
             this.lblCoordenadas = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.canvas = new System.Windows.Forms.PictureBox();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.canvas = new System.Windows.Forms.PictureBox();
-            this.btnCirculo = new System.Windows.Forms.Button();
-            this.btnTriangulo = new System.Windows.Forms.Button();
-            this.btnCuadrado = new System.Windows.Forms.Button();
-            this.btnLinea = new System.Windows.Forms.Button();
-            this.btnConfigGradiente = new System.Windows.Forms.Button();
-            this.btnRelleno = new System.Windows.Forms.Button();
-            this.btnBrocha = new System.Windows.Forms.Button();
-            this.btnGoma = new System.Windows.Forms.Button();
-            this.btnLapiz = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.grbFiguras.SuspendLayout();
@@ -103,7 +104,7 @@
             this.archivoToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(706, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(777, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -187,7 +188,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 24);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(706, 100);
+            this.panel1.Size = new System.Drawing.Size(777, 100);
             this.panel1.TabIndex = 1;
             // 
             // grbFiguras
@@ -203,24 +204,98 @@
             this.grbFiguras.TabStop = false;
             this.grbFiguras.Text = "Figuras";
             // 
+            // btnCirculo
+            // 
+            this.btnCirculo.BackColor = System.Drawing.Color.Transparent;
+            this.btnCirculo.Image = global::Paint.Properties.Resources.circulo;
+            this.btnCirculo.Location = new System.Drawing.Point(46, 55);
+            this.btnCirculo.Name = "btnCirculo";
+            this.btnCirculo.Size = new System.Drawing.Size(30, 30);
+            this.btnCirculo.TabIndex = 5;
+            this.toolTip1.SetToolTip(this.btnCirculo, "Círculo");
+            this.btnCirculo.UseVisualStyleBackColor = false;
+            this.btnCirculo.Click += new System.EventHandler(this.herramientas_Click);
+            // 
+            // btnTriangulo
+            // 
+            this.btnTriangulo.BackColor = System.Drawing.Color.Transparent;
+            this.btnTriangulo.Image = global::Paint.Properties.Resources.triangulo;
+            this.btnTriangulo.Location = new System.Drawing.Point(10, 55);
+            this.btnTriangulo.Name = "btnTriangulo";
+            this.btnTriangulo.Size = new System.Drawing.Size(30, 30);
+            this.btnTriangulo.TabIndex = 4;
+            this.toolTip1.SetToolTip(this.btnTriangulo, "Triángulo equilátero");
+            this.btnTriangulo.UseVisualStyleBackColor = false;
+            this.btnTriangulo.Click += new System.EventHandler(this.herramientas_Click);
+            // 
+            // btnCuadrado
+            // 
+            this.btnCuadrado.BackColor = System.Drawing.Color.Transparent;
+            this.btnCuadrado.Image = global::Paint.Properties.Resources.cuadrado;
+            this.btnCuadrado.Location = new System.Drawing.Point(46, 19);
+            this.btnCuadrado.Name = "btnCuadrado";
+            this.btnCuadrado.Size = new System.Drawing.Size(30, 30);
+            this.btnCuadrado.TabIndex = 3;
+            this.toolTip1.SetToolTip(this.btnCuadrado, "Rectángulo");
+            this.btnCuadrado.UseVisualStyleBackColor = false;
+            this.btnCuadrado.Click += new System.EventHandler(this.herramientas_Click);
+            // 
+            // btnLinea
+            // 
+            this.btnLinea.BackColor = System.Drawing.Color.Transparent;
+            this.btnLinea.Image = global::Paint.Properties.Resources.linea;
+            this.btnLinea.Location = new System.Drawing.Point(10, 19);
+            this.btnLinea.Name = "btnLinea";
+            this.btnLinea.Size = new System.Drawing.Size(30, 30);
+            this.btnLinea.TabIndex = 2;
+            this.toolTip1.SetToolTip(this.btnLinea, "Linea");
+            this.btnLinea.UseVisualStyleBackColor = false;
+            this.btnLinea.Click += new System.EventHandler(this.herramientas_Click);
+            // 
             // grbUtilidades
             // 
+            this.grbUtilidades.Controls.Add(this.chkDesaturar);
             this.grbUtilidades.Controls.Add(this.btnConfigGradiente);
             this.grbUtilidades.Controls.Add(this.chkGradiente);
             this.grbUtilidades.Controls.Add(this.lblTamaños);
             this.grbUtilidades.Controls.Add(this.cboTamaños);
             this.grbUtilidades.Location = new System.Drawing.Point(191, 3);
             this.grbUtilidades.Name = "grbUtilidades";
-            this.grbUtilidades.Size = new System.Drawing.Size(127, 94);
+            this.grbUtilidades.Size = new System.Drawing.Size(198, 94);
             this.grbUtilidades.TabIndex = 4;
             this.grbUtilidades.TabStop = false;
             this.grbUtilidades.Text = "Utilidades";
+            // 
+            // chkDesaturar
+            // 
+            this.chkDesaturar.AutoSize = true;
+            this.chkDesaturar.Location = new System.Drawing.Point(16, 63);
+            this.chkDesaturar.Name = "chkDesaturar";
+            this.chkDesaturar.Size = new System.Drawing.Size(72, 17);
+            this.chkDesaturar.TabIndex = 9;
+            this.chkDesaturar.Text = "Desaturar";
+            this.toolTip1.SetToolTip(this.chkDesaturar, "Gradiente desactivado");
+            this.chkDesaturar.UseVisualStyleBackColor = true;
+            this.chkDesaturar.CheckedChanged += new System.EventHandler(this.chkDesaturar_CheckedChanged);
+            // 
+            // btnConfigGradiente
+            // 
+            this.btnConfigGradiente.BackColor = System.Drawing.Color.Transparent;
+            this.btnConfigGradiente.Enabled = false;
+            this.btnConfigGradiente.Image = global::Paint.Properties.Resources.config;
+            this.btnConfigGradiente.Location = new System.Drawing.Point(115, 58);
+            this.btnConfigGradiente.Name = "btnConfigGradiente";
+            this.btnConfigGradiente.Size = new System.Drawing.Size(72, 25);
+            this.btnConfigGradiente.TabIndex = 8;
+            this.toolTip1.SetToolTip(this.btnConfigGradiente, "Configuración del gradiente");
+            this.btnConfigGradiente.UseVisualStyleBackColor = false;
+            this.btnConfigGradiente.Click += new System.EventHandler(this.btnConfigGradiente_Click);
             // 
             // chkGradiente
             // 
             this.chkGradiente.AutoSize = true;
             this.chkGradiente.Enabled = false;
-            this.chkGradiente.Location = new System.Drawing.Point(9, 67);
+            this.chkGradiente.Location = new System.Drawing.Point(115, 36);
             this.chkGradiente.Name = "chkGradiente";
             this.chkGradiente.Size = new System.Drawing.Size(72, 17);
             this.chkGradiente.TabIndex = 2;
@@ -271,7 +346,7 @@
             this.grbColores.Controls.Add(this.btnRojo);
             this.grbColores.Controls.Add(this.btnRojoOcuro);
             this.grbColores.Controls.Add(this.btnGris);
-            this.grbColores.Location = new System.Drawing.Point(324, 3);
+            this.grbColores.Location = new System.Drawing.Point(395, 3);
             this.grbColores.Name = "grbColores";
             this.grbColores.Size = new System.Drawing.Size(375, 94);
             this.grbColores.TabIndex = 1;
@@ -522,118 +597,6 @@
             this.grbHerramientas.TabStop = false;
             this.grbHerramientas.Text = "Herramientas";
             // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.Filter = "Todos los archivos de imagen|*.png;*.jpg;*.jpeg;*.bmp;*.gif|PNG|*.png|JPEG|*.jpeg" +
-    ";*.jpg|BMP|*.bmp|GIF|*.gif";
-            // 
-            // saveFileDialog1
-            // 
-            this.saveFileDialog1.Filter = "PNG|*.png|JPEG|*.jpeg;*.jpg|BMP|*.bmp|GIF|*.gif";
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.lblCoordenadas);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(0, 541);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(706, 20);
-            this.panel3.TabIndex = 3;
-            // 
-            // lblCoordenadas
-            // 
-            this.lblCoordenadas.AutoSize = true;
-            this.lblCoordenadas.Location = new System.Drawing.Point(4, 3);
-            this.lblCoordenadas.Name = "lblCoordenadas";
-            this.lblCoordenadas.Size = new System.Drawing.Size(70, 13);
-            this.lblCoordenadas.TabIndex = 0;
-            this.lblCoordenadas.Text = "Coordenadas";
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.canvas);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 124);
-            this.panel2.Name = "panel2";
-            this.panel2.Padding = new System.Windows.Forms.Padding(7);
-            this.panel2.Size = new System.Drawing.Size(706, 417);
-            this.panel2.TabIndex = 4;
-            // 
-            // canvas
-            // 
-            this.canvas.BackColor = System.Drawing.Color.White;
-            this.canvas.Location = new System.Drawing.Point(4, 3);
-            this.canvas.Name = "canvas";
-            this.canvas.Size = new System.Drawing.Size(692, 410);
-            this.canvas.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.canvas.TabIndex = 3;
-            this.canvas.TabStop = false;
-            this.canvas.MouseDown += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseDown);
-            this.canvas.MouseLeave += new System.EventHandler(this.canvas_MouseLeave);
-            this.canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseMove);
-            this.canvas.MouseUp += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseUp);
-            // 
-            // btnCirculo
-            // 
-            this.btnCirculo.BackColor = System.Drawing.Color.Transparent;
-            this.btnCirculo.Image = global::Paint.Properties.Resources.circulo;
-            this.btnCirculo.Location = new System.Drawing.Point(46, 55);
-            this.btnCirculo.Name = "btnCirculo";
-            this.btnCirculo.Size = new System.Drawing.Size(30, 30);
-            this.btnCirculo.TabIndex = 5;
-            this.toolTip1.SetToolTip(this.btnCirculo, "Círculo");
-            this.btnCirculo.UseVisualStyleBackColor = false;
-            this.btnCirculo.Click += new System.EventHandler(this.herramientas_Click);
-            // 
-            // btnTriangulo
-            // 
-            this.btnTriangulo.BackColor = System.Drawing.Color.Transparent;
-            this.btnTriangulo.Image = global::Paint.Properties.Resources.triangulo;
-            this.btnTriangulo.Location = new System.Drawing.Point(10, 55);
-            this.btnTriangulo.Name = "btnTriangulo";
-            this.btnTriangulo.Size = new System.Drawing.Size(30, 30);
-            this.btnTriangulo.TabIndex = 4;
-            this.toolTip1.SetToolTip(this.btnTriangulo, "Triángulo equilátero");
-            this.btnTriangulo.UseVisualStyleBackColor = false;
-            this.btnTriangulo.Click += new System.EventHandler(this.herramientas_Click);
-            // 
-            // btnCuadrado
-            // 
-            this.btnCuadrado.BackColor = System.Drawing.Color.Transparent;
-            this.btnCuadrado.Image = global::Paint.Properties.Resources.cuadrado;
-            this.btnCuadrado.Location = new System.Drawing.Point(46, 19);
-            this.btnCuadrado.Name = "btnCuadrado";
-            this.btnCuadrado.Size = new System.Drawing.Size(30, 30);
-            this.btnCuadrado.TabIndex = 3;
-            this.toolTip1.SetToolTip(this.btnCuadrado, "Rectángulo");
-            this.btnCuadrado.UseVisualStyleBackColor = false;
-            this.btnCuadrado.Click += new System.EventHandler(this.herramientas_Click);
-            // 
-            // btnLinea
-            // 
-            this.btnLinea.BackColor = System.Drawing.Color.Transparent;
-            this.btnLinea.Image = global::Paint.Properties.Resources.linea;
-            this.btnLinea.Location = new System.Drawing.Point(10, 19);
-            this.btnLinea.Name = "btnLinea";
-            this.btnLinea.Size = new System.Drawing.Size(30, 30);
-            this.btnLinea.TabIndex = 2;
-            this.toolTip1.SetToolTip(this.btnLinea, "Linea");
-            this.btnLinea.UseVisualStyleBackColor = false;
-            this.btnLinea.Click += new System.EventHandler(this.herramientas_Click);
-            // 
-            // btnConfigGradiente
-            // 
-            this.btnConfigGradiente.BackColor = System.Drawing.Color.Transparent;
-            this.btnConfigGradiente.Enabled = false;
-            this.btnConfigGradiente.Image = global::Paint.Properties.Resources.config;
-            this.btnConfigGradiente.Location = new System.Drawing.Point(87, 62);
-            this.btnConfigGradiente.Name = "btnConfigGradiente";
-            this.btnConfigGradiente.Size = new System.Drawing.Size(25, 25);
-            this.btnConfigGradiente.TabIndex = 8;
-            this.toolTip1.SetToolTip(this.btnConfigGradiente, "Configuración del gradiente");
-            this.btnConfigGradiente.UseVisualStyleBackColor = false;
-            this.btnConfigGradiente.Click += new System.EventHandler(this.btnConfigGradiente_Click);
-            // 
             // btnRelleno
             // 
             this.btnRelleno.BackColor = System.Drawing.Color.Transparent;
@@ -682,11 +645,62 @@
             this.btnLapiz.UseVisualStyleBackColor = false;
             this.btnLapiz.Click += new System.EventHandler(this.herramientas_Click);
             // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.Filter = "Todos los archivos de imagen|*.png;*.jpeg;*.bmp|PNG (*.png)|*.png|JPEG (*.jpeg)|*" +
+    ".jpeg|BMP (*.bmp)|*.bmp";
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.Filter = "PNG (*.png)|*.png|JPEG (*.jpeg)|*.jpeg|BMP (*.bmp)|*.bmp";
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.lblCoordenadas);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel3.Location = new System.Drawing.Point(0, 541);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(777, 20);
+            this.panel3.TabIndex = 3;
+            // 
+            // lblCoordenadas
+            // 
+            this.lblCoordenadas.AutoSize = true;
+            this.lblCoordenadas.Location = new System.Drawing.Point(4, 3);
+            this.lblCoordenadas.Name = "lblCoordenadas";
+            this.lblCoordenadas.Size = new System.Drawing.Size(70, 13);
+            this.lblCoordenadas.TabIndex = 0;
+            this.lblCoordenadas.Text = "Coordenadas";
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.canvas);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(0, 124);
+            this.panel2.Name = "panel2";
+            this.panel2.Padding = new System.Windows.Forms.Padding(7);
+            this.panel2.Size = new System.Drawing.Size(777, 417);
+            this.panel2.TabIndex = 4;
+            // 
+            // canvas
+            // 
+            this.canvas.BackColor = System.Drawing.Color.White;
+            this.canvas.Location = new System.Drawing.Point(7, 3);
+            this.canvas.Name = "canvas";
+            this.canvas.Size = new System.Drawing.Size(763, 410);
+            this.canvas.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.canvas.TabIndex = 3;
+            this.canvas.TabStop = false;
+            this.canvas.MouseDown += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseDown);
+            this.canvas.MouseLeave += new System.EventHandler(this.canvas_MouseLeave);
+            this.canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseMove);
+            this.canvas.MouseUp += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseUp);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(706, 561);
+            this.ClientSize = new System.Drawing.Size(777, 561);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
@@ -776,6 +790,7 @@
         private System.Windows.Forms.Button btnCuadrado;
         private System.Windows.Forms.Button btnLinea;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.CheckBox chkDesaturar;
     }
 }
 
