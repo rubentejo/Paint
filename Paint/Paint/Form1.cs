@@ -278,7 +278,6 @@ namespace Paint
             }
             else if ((Button)sender == btnLinea)
             {
-                rellenoActivado = false;
                 herramienta = Herramientas.Linea;
                 cboTamaños.Enabled = false;
             }
