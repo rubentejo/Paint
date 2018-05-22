@@ -28,6 +28,7 @@ namespace Paint
         bool moving;                                        //Indica si el raton se está moviendo
         bool imagenAuxGuardada;                             //Indica (a la hora de dibujar figuras) si se ha guardado la imagen previa
         bool desaturar;                                     //Indica si la aplicación debe desaturar
+        bool readOnly;                                      //Indica si la imagen abierta tiene unicamente permisos de lectura
         string ruta;                                        //Ruta de la imagen abierta
         ImageFormat formato;                                //Formato de la imagen abierta
         int tamañoLapiz;                                    //Tamaño de la herramienta lápiz
@@ -79,6 +80,7 @@ namespace Paint
             mouseDown = false;
             cambios = false;
             moving = false;
+            readOnly = false;
             herramienta = Herramientas.Lapiz;
             inicio = new Point();
             fin = new Point();
@@ -359,14 +361,15 @@ namespace Paint
 
                 try
                 {
+                    ruta = openFileDialog1.FileName;
+                    FileInfo f = new FileInfo(ruta);
+                    readOnly = f.IsReadOnly;
                     stream = new StreamReader(openFileDialog1.FileName);
                     canvas.Image = Image.FromStream(stream.BaseStream);
                     g = Graphics.FromImage(canvas.Image);
                     canvas.Invalidate();
-                    imagenAbierta = true;
-                    ruta = openFileDialog1.FileName;
-                    formato = canvas.Image.RawFormat;
-                    FileInfo f = new FileInfo(ruta);
+                    imagenAbierta = true;                    
+                    formato = canvas.Image.RawFormat;                    
                     string aux = "";
                     for (int i = 0; i < f.Name.Length; i++)
                     {
@@ -378,6 +381,10 @@ namespace Paint
                     }
                     Text = aux;
                     cambios = false;
+                }
+                catch (ArgumentException)
+                {
+                    MessageBox.Show("Ha ocurrido un problema al abrir el archivo. Inténtalo de nuevo o prueba con otro.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
                 catch (IOException)
                 {
@@ -714,7 +721,7 @@ namespace Paint
         {
             if (cambios)
             {
-                if (imagenAbierta || ruta.Length != 0)
+                if ((imagenAbierta || ruta.Length != 0) && !readOnly)
                 {
                     canvas.Image.Save(ruta, formato);
                     cambios = false;
