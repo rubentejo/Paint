@@ -54,7 +54,7 @@ namespace Paint
 
         ColorMatrix clrMatrix;                              //Matriz de color de desaturado
         ImageAttributes imgAttributes;                      //Variable auxiliar que guarda la matriz de color de desaturado
-        
+
 
         public Form1()
         {
@@ -368,8 +368,8 @@ namespace Paint
                     canvas.Image = Image.FromStream(stream.BaseStream);
                     g = Graphics.FromImage(canvas.Image);
                     canvas.Invalidate();
-                    imagenAbierta = true;                    
-                    formato = canvas.Image.RawFormat;                    
+                    imagenAbierta = true;
+                    formato = canvas.Image.RawFormat;
                     string aux = "";
                     for (int i = 0; i < f.Name.Length; i++)
                     {
@@ -385,12 +385,20 @@ namespace Paint
                 catch (ArgumentException)
                 {
                     MessageBox.Show("Ha ocurrido un problema al abrir el archivo. Inténtalo de nuevo o prueba con otro.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    ruta = "";
+                    cambios = false;
+                    imagenAbierta = false;
+                    readOnly = false;
                 }
                 catch (IOException)
                 {
                     MessageBox.Show("Ha ocurrido un problema al abrir el archivo. Inténtalo de nuevo o prueba con otro.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    ruta = "";
+                    cambios = false;
+                    imagenAbierta = false;
+                    readOnly = false;
                 }
-                
+
                 stream.Dispose();
             }
         }
@@ -422,31 +430,38 @@ namespace Paint
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK && saveFileDialog1.FileName != null)
             {
-                canvas.Image.Save(saveFileDialog1.FileName);
-                ruta = saveFileDialog1.FileName;
-                FileInfo f = new FileInfo(ruta);
-                string aux = "";
-                for (int i = 0; i < f.Name.Length; i++)
+                try
                 {
-                    if (f.Name[i] != '.')
+                    canvas.Image.Save(saveFileDialog1.FileName);
+                    ruta = saveFileDialog1.FileName;
+                    FileInfo f = new FileInfo(ruta);
+                    string aux = "";
+                    for (int i = 0; i < f.Name.Length; i++)
                     {
-                        aux += f.Name[i];
+                        if (f.Name[i] != '.')
+                        {
+                            aux += f.Name[i];
+                        }
+                        else break;
                     }
-                    else break;
+                    Text = aux;
+                    cambios = false;
+                    switch (saveFileDialog1.FilterIndex)
+                    {
+                        case 1:
+                            formato = ImageFormat.Png;
+                            break;
+                        case 2:
+                            formato = ImageFormat.Jpeg;
+                            break;
+                        case 3:
+                            formato = ImageFormat.Bmp;
+                            break;
+                    }
                 }
-                Text = aux;
-                cambios = false;
-                switch (saveFileDialog1.FilterIndex)
+                catch (System.Runtime.InteropServices.ExternalException)
                 {
-                    case 1:
-                        formato = ImageFormat.Png;
-                        break;
-                    case 2:
-                        formato = ImageFormat.Jpeg;
-                        break;
-                    case 3:
-                        formato = ImageFormat.Bmp;
-                        break;
+                    MessageBox.Show("Se denegó el acceso a " + ruta, "Paint", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
@@ -695,7 +710,7 @@ namespace Paint
                         }
                         g.Clear(Color.White);
                         g.DrawImage(Image.FromStream(controlCambios.ElementAt(controlCambios.Count - 1)), canvas.ClientRectangle);
-                        
+
                         canvas.Invalidate();
                     }
                 }
@@ -723,8 +738,15 @@ namespace Paint
             {
                 if ((imagenAbierta || ruta.Length != 0) && !readOnly)
                 {
-                    canvas.Image.Save(ruta, formato);
-                    cambios = false;
+                    try
+                    {
+                        canvas.Image.Save(ruta, formato);
+                        cambios = false;
+                    }
+                    catch (System.Runtime.InteropServices.ExternalException)
+                    {
+                        MessageBox.Show("Se denegó el acceso a " + ruta, "Paint", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
                 else
                 {
